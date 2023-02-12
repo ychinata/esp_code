@@ -1,17 +1,16 @@
 
 /*
-* Connect the SD card to the following pins:
+* 硬件连接：
 *
-* SD Card | ESP32
-* D2 -
-* D3 SS
-* CMD MOSI
-* VSS GND
-* VDD 3.3V
-* CLK SCK
-* VSS GND
-* D0 MISO
-* D1 -
+* SD Card -- ESP32:
+
+* CS  -- GPIO5
+* CLK -- GPIO18
+* MISO-- GPIO19
+* MOSI-- GPIO23
+* GND -- GND
+* VCC --3.3V/VIN
+* 
 */
 
 //http://www.esp32learning.com/code/esp32-and-microsd-card-example.php
@@ -91,6 +90,7 @@ void readFile(fs::FS &fs, const char * path){
     while(file.available()){    // 遍历行读取
         Serial.write(file.read());
     }
+    file.close();
 }
 
 // 创建写文件
@@ -107,6 +107,7 @@ void writeFile(fs::FS &fs, const char * path, const char * message){
     } else {
         Serial.println("Write failed");
     }
+    file.close();
 }
 
 // 追加写文件
@@ -123,6 +124,7 @@ void appendFile(fs::FS &fs, const char * path, const char * message){
     } else {
         Serial.println("Append failed");
     }
+    file.close();
 }
 
 // 更名文件
@@ -236,6 +238,8 @@ void setup(){
     renameFile(SD, "/hello.txt", "/foo.txt");
     readFile(SD, "/foo.txt");
     testFileIO(SD, "/test.txt");
+    Serial.printf("Total space: %lluMB\n", SD.totalBytes() / (1024 * 1024));
+    Serial.printf("Used space: %lluMB\n", SD.usedBytes() / (1024 * 1024));
 }
  
 void loop(){
