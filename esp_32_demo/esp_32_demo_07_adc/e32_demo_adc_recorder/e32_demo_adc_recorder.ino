@@ -2,41 +2,52 @@
 #include "SdFat.h"
 #include "MyI2S.h"
 #include "wave.h"
+// 内置SD
+#include "FS.h"
+#include "SD.h"
+#include "fs_io.h"
+// 内置SD
 
-SdFs sd;      // sd卡
-FsFile file;  // 录音文件
+//SdFs sd;      // sd卡
+//FsFile file;  // 录音文件
 
 MyI2S mi;
 const int record_time = 60;  // second
-const char filename[] = "/我的录音Adc.wav";
+//const char filename[] = "/我的录音Adc.wav";
+const char filename[] = "/my_record_adc.wav";
 
 const int waveDataSize = record_time * 88200;
 int16_t communicationData[1024];  //接收缓冲区
 char partWavData[1024];
-
 
 void setup() {
 	Serial.begin(115200);
 	delay(500);
 
 	// 初始化SD卡
-	if(!sd.begin(SdSpiConfig(5, DEDICATED_SPI, 18000000))) {
+	//if(!sd.begin(SdSpiConfig(5, DEDICATED_SPI, 18000000))) {
+	if(!SD.begin()) {		
 		Serial.println("init sd card error");
 		return;
 	}
 
 	//删除并创建文件
-	sd.remove(filename);
-	file = sd.open(filename, O_WRITE|O_CREAT);
+	//sd.remove(filename);	
+    deleteFile(SD, filename);
+	
+	//file = sd.open(filename, O_WRITE|O_CREAT);	
+	File file = SD.open(filename, FILE_WRITE);
+	
 	if(!file) {
 		Serial.println("crate file error");
 		return;
 	}
 
+
 	auto header = CreateWaveHeader(1, 44100, 16);
 	header.riffSize = waveDataSize + 44 - 8;
 	header.dataSize = waveDataSize;
-	file.write(&header, 44);
+	file.write((const uint8_t*)&header, 44);	// sd/sdfat一致
 
 	if(!mi.InitAdcInput(I2S_BITS_PER_SAMPLE_16BIT, ADC1_CHANNEL_7)) {
 		Serial.println("init i2s error");
@@ -56,9 +67,9 @@ void setup() {
 				partWavData[i + 1] = p[2*i + 1];
 			}
 		}
-		file.write((const byte*)partWavData, 1024);
+		file.write((const byte*)partWavData, 1024);	// sd/sdfat一致
 	}
-	file.close();
+	file.close();	// sd/sdfat一致
 	Serial.println("finish");
 }
 
