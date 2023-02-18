@@ -11,6 +11,22 @@
 //SdFs sd;      // sd卡
 //FsFile file;  // 录音文件
 
+/*
+* 硬件连接：如下
+* --------------
+* SD Card -- ESP32:
+* CS  -- GPIO5
+* CLK -- GPIO18
+* MISO-- GPIO19
+* MOSI-- GPIO23
+* GND -- GND
+* VCC --3.3V/VIN
+* --------------
+* MAX4466 -- ESP32:
+* OUT -- GPIO35
+*/
+
+
 MyI2S mi;
 const int record_time = 60;  // second
 //const char filename[] = "/我的录音Adc.wav";
