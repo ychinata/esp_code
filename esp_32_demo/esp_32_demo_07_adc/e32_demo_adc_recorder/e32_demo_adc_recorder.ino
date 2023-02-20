@@ -28,9 +28,9 @@
 
 
 MyI2S mi;
-const int record_time = 60;  // second
+const int record_time = 2;  // second
 //const char filename[] = "/我的录音Adc.wav";
-const char filename[] = "/my_record_adc.wav";
+const char filename[] = "/my_record_adc_2s.wav";
 
 const int waveDataSize = record_time * 88200;
 int16_t communicationData[1024];  //接收缓冲区
