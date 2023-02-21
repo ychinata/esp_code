@@ -30,37 +30,23 @@
 */
 
 //record
-MyI2S mi;
+//MyI2S mi;
 const int record_time = 2;  // second
-const char filename[] = "/my_record_adc_2s.wav";
-
+//const char filename[] = "/my_record_adc_2s.wav";
 const int waveDataSize = record_time * 88200;
-int16_t communicationData[1024];  //接收缓冲区
-char partWavData[1024];
+//char partWavData[1024];		//writeFileBuff
+int16_t communicationData[1024];  //接收I2S缓冲区
 //record
 
 //play
-MyI2S mi;
+MyI2S mi;	// g_I2s
 const char filename[] = "/my_record_adc_2s.wav";
-
-int16_t buffer[1024];        //接收缓冲区, =u8*2048
+int16_t buffer[1024];        //接收缓冲区, =u8*2048,readFileBuff
 int16_t partWavData[2048];   //发往I2S的缓冲区
 //play
 
-//play
-void setup() {
-	Serial.begin(115200);
-	delay(500);
-
-	// 初始化SD卡
-	if(!SD.begin()) {				
-		Serial.println("init sd card error");
-		return;
-	}
-
-	//打印文件	
-    listDir(SD, "/", 0);	
-
+//2023.2.21
+void WAV_Play() {	// (filename)
 	//打开文件
     File file = SD.open(filename);	
 	
@@ -81,7 +67,7 @@ void setup() {
 
 	int recvSize = 0;
 	do {
-		recvSize =  file.read((uint8_t*)buffer, 2048);	// u16*1024->u8*2048,代码需要调整
+		recvSize =  file.read((uint8_t*)buffer, 2048);	// u16*1024->u8*2048
     	Serial.printf("recvSize: %d\n", recvSize);
 	
 		for(int i = 0; i<recvSize/2; i++) {		//相当于u16*2048
@@ -96,8 +82,29 @@ void setup() {
 	Serial.println("finish: read wav file");
 }
 
+//play
+void setup() {
+	Serial.begin(115200);
+	delay(500);
+
+	// 初始化SD卡
+	if(!SD.begin()) {				
+		Serial.println("init sd card error");
+		return;
+	}
+
+	//打印文件	
+    listDir(SD, "/", 0);	
+
+	//-------------------------------
+	WAV_Play();
+	//-------------------------------
+	
+}
+
 
 //record
+/*
 void setup() {
 	Serial.begin(115200);
 	delay(500);
@@ -138,7 +145,7 @@ void setup() {
 	for (int j = 0; j < waveDataSize/1024; ++j) {
 		auto sz = mi.Read((char*)communicationData, 2048);	//获取IS2接口中ADC输入数据
 		char*p =(char*)(communicationData);		// 16bit*1024转8bit*2048\
-		//循环1024
+		//写入1个1024 byte的数据块
 		for(int i=0;i<sz/2;i++) {
 			communicationData[i] = communicationData[i] & 0x0FFF;	// ADC是12bit,只有低12bit有效
 			communicationData[i] *= 7;		// 声音存储前放大
@@ -152,6 +159,7 @@ void setup() {
 	file.close();	// sd/sdfat一致
 	Serial.println("finish");
 }
+*/
 
 void loop() {
 	// put your main code here, to run repeatedly:
