@@ -12,9 +12,26 @@
 //SdFs sd;      // sd卡
 //FsFile file;  // 录音文件
 
+/*
+* 硬件连接：如下
+* --------------
+* SD Card -- ESP32:
+* CS  -- GPIO5
+* CLK -- GPIO18
+* MISO-- GPIO19
+* MOSI-- GPIO23
+* GND -- GND
+* VCC --3.3V/VIN
+* --------------
+* MAX4466 -- ESP32:
+* OUT -- GPIO35
+* 
+*/
+
+
 MyI2S mi;
 //const char filename[] = "/我的录音.wav";
-const char filename[] = "/my_record_adc.wav";
+const char filename[] = "/my_record_adc_2s.wav";
 
 int16_t buffer[1024];        //接收缓冲区, =u8*2048
 int16_t partWavData[2048];   //发往I2S的缓冲区
@@ -29,6 +46,9 @@ void setup() {
 		Serial.println("init sd card error");
 		return;
 	}
+
+	//打印文件	
+    listDir(SD, "/", 0);	
 
 	//打开文件
 	//file = sd.open(filename, O_READ);
@@ -55,7 +75,7 @@ void setup() {
     	Serial.printf("recvSize: %d\n", recvSize);
 	
 		for(int i = 0; i<recvSize/2; i++) {		//相当于u16*2048
-			buffer[i] += 0x8000;				//adc数据调整
+			//buffer[i] += 0x8000;				//adc数据调整,如果录音时没有做对应的处理,则此处不需处理
 			partWavData[2*i] = buffer[i];       //左声道,左右声道数据填充一致
 			partWavData[2*i+1] = buffer[i];     //右声道
 		}
