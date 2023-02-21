@@ -24,6 +24,9 @@
 * --------------
 * MAX4466 -- ESP32:
 * OUT -- GPIO35
+* --------------
+* LM386功放 -- ESP32:
+* IN -- GPIO25/26
 */
 
 
@@ -41,7 +44,6 @@ void setup() {
 	delay(500);
 
 	// 初始化SD卡
-	//if(!sd.begin(SdSpiConfig(5, DEDICATED_SPI, 18000000))) {
 	if(!SD.begin()) {		
 		Serial.println("init sd card error");
 		return;
@@ -51,37 +53,37 @@ void setup() {
     listDir(SD, "/", 0);
 
 	//删除并创建文件
-	//sd.remove(filename);	
     deleteFile(SD, filename);
-	
-	//file = sd.open(filename, O_WRITE|O_CREAT);	
-	File file = SD.open(filename, FILE_WRITE);
-	
+
+	//写模式创建新文件	
+	File file = SD.open(filename, FILE_WRITE);	
 	if(!file) {
 		Serial.println("crate file error");
 		return;
 	}
 
-
+	//填充wav文件头
 	auto header = CreateWaveHeader(1, 44100, 16);
 	header.riffSize = waveDataSize + 44 - 8;
 	header.dataSize = waveDataSize;
 	file.write((const uint8_t*)&header, 44);	// sd/sdfat一致
 
+	// I2S-ADC初始化
 	if(!mi.InitAdcInput(I2S_BITS_PER_SAMPLE_16BIT, ADC1_CHANNEL_7)) {
 		Serial.println("init i2s error");
 		return;
 	}
-
 	Serial.println("start");
 
+	// 
 	for (int j = 0; j < waveDataSize/1024; ++j) {
-		auto sz = mi.Read((char*)communicationData, 2048);
-		char*p =(char*)(communicationData);
+		auto sz = mi.Read((char*)communicationData, 2048);	//获取IS2接口中ADC输入数据
+		char*p =(char*)(communicationData);		// 16bit*1024转8bit*2048\
+		//循环1024
 		for(int i=0;i<sz/2;i++) {
-			communicationData[i] = communicationData[i] & 0x0FFF;
-			communicationData[i] *= 7;
-			if(i%2 == 0) {
+			communicationData[i] = communicationData[i] & 0x0FFF;	// ADC是12bit,只有低12bit有效
+			communicationData[i] *= 7;		// 声音存储前放大
+			if(i%2 == 0) {					// 每2次填充2个u8(1个u16),即抛弃掉其中一个声道?
 				partWavData[i] = p[2*i];
 				partWavData[i + 1] = p[2*i + 1];
 			}
