@@ -47,6 +47,9 @@ void setup() {
 		return;
 	}
 
+	//打印文件	
+    listDir(SD, "/", 0);
+
 	//删除并创建文件
 	//sd.remove(filename);	
     deleteFile(SD, filename);
