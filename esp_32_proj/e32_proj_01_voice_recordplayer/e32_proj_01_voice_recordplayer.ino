@@ -8,9 +8,6 @@
 #include "fs_io.h"
 // 内置SD
 
-//SdFs sd;      // sd卡
-//FsFile file;  // 录音文件
-
 /*
 * 硬件连接：如下
 * --------------
@@ -29,28 +26,64 @@
 * IN -- GPIO25/26
 */
 
-/***************** record ******************/
-//MyI2S mi;
-const int record_time = 2;  // second
-//const char filename[] = "/my_record_adc_2s.wav";
-const int waveDataSize = record_time * 88200;
-//数据流:communicationData->writeFileBuff
-char writeFileBuff[1024];		// partWavData
-int16_t communicationData[1024];  //接收I2S缓冲区
-/***************** record ******************/
-
+/***************** 内部函数声明 ******************/
 void WAV_Record();
+void WAV_Play();
 
-/***************** play ******************/
+/***************** 全局变量声明 ******************/
 MyI2S mi;	// g_I2s
 const char filename[] = "/my_record_adc_2s.wav";
-//数据流:buffer->partWavData
-int16_t buffer[1024];        //接收缓冲区, =u8*2048,readFileBuff
-int16_t partWavData[2048];   //发往I2S的缓冲区
+const int record_time = 2;  // second, 记录音频的时长
+const int waveDataSize = record_time * 88200;
+
+
+/***************** record ******************/
+//数据流:recvI2SBuffer->writeFileBuff
+char writeFileBuff[1024];		// sendI2SBuffer
+int16_t recvI2SBuffer[1024];  //接收I2S缓冲区
+/***************** record ******************/
+
+/***************** play ******************/
+//数据流:readFileBuff->sendI2SBuffer
+int16_t readFileBuff[1024];        //接收缓冲区, =u8*2048,readFileBuff
+int16_t sendI2SBuffer[2048];   //发往I2S的缓冲区
 /***************** play ******************/
 
-//2023.2.21
+// 主函数启动
+void setup() {
+	Serial.begin(115200);
+	delay(500);
+
+	// 初始化SD卡
+	if(!SD.begin()) {				
+		Serial.println("init sd card error");
+		return;
+	}
+
+	// 录音并生成wav文件, 保存在SD卡中
+	WAV_Record();
+
+	// 读取SD卡中的wav文件，并播放
+	WAV_Play();
+}
+
+
+// 主循环
+void loop() {
+	// put your main code here, to run repeatedly:
+
+}
+
+
+/*********************
+ * Func:   播放wav文件, 从SD卡中读取
+ * Author: xy
+ * Date:   2023.2.21
+ *********************/ 
 void WAV_Play() {	// (filename)
+	//打印文件	
+    listDir(SD, "/", 0);	
+
 	//打开文件
     File file = SD.open(filename);	
 	
@@ -67,56 +100,41 @@ void WAV_Play() {	// (filename)
 		return;
 	}
 
-	Serial.println("start: read wav file");
+	Serial.println("Play start!");
 
 	int recvSize = 0;
 	do {
-		recvSize =  file.read((uint8_t*)buffer, 2048);	// u16*1024->u8*2048
-    	Serial.printf("recvSize: %d\n", recvSize);
+		recvSize =  file.read((uint8_t*)readFileBuff, 2048);	// u16*1024->u8*2048
+    	// Serial.printf("recvSize: %d\n", recvSize);
 	
 		for(int i = 0; i<recvSize/2; i++) {		//相当于u16*2048
-			partWavData[2*i] = buffer[i];       //左声道,左右声道数据填充一致
-			partWavData[2*i+1] = buffer[i];     //右声道
+			sendI2SBuffer[2*i] = readFileBuff[i];       //左声道,左右声道数据填充一致
+			sendI2SBuffer[2*i+1] = readFileBuff[i];     //右声道
 		}
 
-		mi.Write((char*)partWavData, recvSize*2);
+		mi.Write((char*)sendI2SBuffer, recvSize*2);
 	} while(recvSize>0);
 	file.close();
 	mi.End();		// 不加会有错误
-	Serial.println("finish: read wav file");
+	Serial.println("Play finish!");
 }
 
-// 主函数启动
-void setup() {
-	Serial.begin(115200);
-	delay(500);
-
-	// 初始化SD卡
-	if(!SD.begin()) {				
-		Serial.println("init sd card error");
-		return;
-	}
-
-	//打印文件	
-    listDir(SD, "/", 0);	
-	WAV_Record();
-
-	//打印文件	
-    listDir(SD, "/", 0);	
-	//-------------------------------
-	WAV_Play();
-	//-------------------------------
-	
-}
-
+/*********************
+ * Func:   录音并生成wav文件, 存储到SD卡中
+ * Author: xy
+ * Date:   2023.3.25
+ *********************/ 
 void WAV_Record() {
+	//打印文件	
+    listDir(SD, "/", 0);
+
 	//删除并创建文件
     deleteFile(SD, filename);
 
 	//写模式创建新文件	
 	File file = SD.open(filename, FILE_WRITE);	
 	if(!file) {
-		Serial.println("crate file error");
+		Serial.println("create file error");
 		return;
 	}
 
@@ -131,16 +149,16 @@ void WAV_Record() {
 		Serial.println("init i2s error");
 		return;
 	}
-	Serial.println("start");
+	Serial.println("Record start!");
 
 	// 
 	for (int j = 0; j < waveDataSize/1024; ++j) {
-		auto sz = mi.Read((char*)communicationData, 2048);	//获取IS2接口中ADC输入数据
-		char*p =(char*)(communicationData);		// 16bit*1024转8bit*2048\
+		auto sz = mi.Read((char*)recvI2SBuffer, 2048);	//获取IS2接口中ADC输入数据
+		char*p =(char*)(recvI2SBuffer);		// 16bit*1024转8bit*2048\
 		//写入1个1024 byte的数据块
 		for(int i=0;i<sz/2;i++) {
-			communicationData[i] = communicationData[i] & 0x0FFF;	// ADC是12bit,只有低12bit有效
-			communicationData[i] *= 7;		// 声音存储前放大
+			recvI2SBuffer[i] = recvI2SBuffer[i] & 0x0FFF;	// ADC是12bit,只有低12bit有效
+			recvI2SBuffer[i] *= 7;		// 声音存储前放大7倍
 			if(i%2 == 0) {					// 每2次填充2个u8(1个u16),即抛弃掉其中一个声道?
 				writeFileBuff[i] = p[2*i];
 				writeFileBuff[i + 1] = p[2*i + 1];
@@ -150,29 +168,7 @@ void WAV_Record() {
 	}
 	file.close();	// sd/sdfat一致
 	mi.End();		// 不加会有错误
-	Serial.println("finish");
+	Serial.println("Record finish!");
 }
 
-//record
-/*
-void setup() {
-	Serial.begin(115200);
-	delay(500);
-
-	// 初始化SD卡
-	if(!SD.begin()) {		
-		Serial.println("init sd card error");
-		return;
-	}
-
-	//打印文件	
-    listDir(SD, "/", 0);
-}
-*/
-
-// 主循环
-void loop() {
-	// put your main code here, to run repeatedly:
-
-}
 
