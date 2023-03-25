@@ -29,21 +29,25 @@
 * IN -- GPIO25/26
 */
 
-//record
+/***************** record ******************/
 //MyI2S mi;
 const int record_time = 2;  // second
 //const char filename[] = "/my_record_adc_2s.wav";
 const int waveDataSize = record_time * 88200;
-//char partWavData[1024];		//writeFileBuff
+//数据流:communicationData->writeFileBuff
+char writeFileBuff[1024];		// partWavData
 int16_t communicationData[1024];  //接收I2S缓冲区
-//record
+/***************** record ******************/
 
-//play
+void WAV_Record();
+
+/***************** play ******************/
 MyI2S mi;	// g_I2s
 const char filename[] = "/my_record_adc_2s.wav";
+//数据流:buffer->partWavData
 int16_t buffer[1024];        //接收缓冲区, =u8*2048,readFileBuff
 int16_t partWavData[2048];   //发往I2S的缓冲区
-//play
+/***************** play ******************/
 
 //2023.2.21
 void WAV_Play() {	// (filename)
@@ -82,7 +86,7 @@ void WAV_Play() {	// (filename)
 	Serial.println("finish: read wav file");
 }
 
-//play
+// 主函数启动
 void setup() {
 	Serial.begin(115200);
 	delay(500);
@@ -95,29 +99,17 @@ void setup() {
 
 	//打印文件	
     listDir(SD, "/", 0);	
+	WAV_Record();
 
+	//打印文件	
+    listDir(SD, "/", 0);	
 	//-------------------------------
 	WAV_Play();
 	//-------------------------------
 	
 }
 
-
-//record
-/*
-void setup() {
-	Serial.begin(115200);
-	delay(500);
-
-	// 初始化SD卡
-	if(!SD.begin()) {		
-		Serial.println("init sd card error");
-		return;
-	}
-
-	//打印文件	
-    listDir(SD, "/", 0);
-
+void WAV_Record() {
 	//删除并创建文件
     deleteFile(SD, filename);
 
@@ -150,17 +142,34 @@ void setup() {
 			communicationData[i] = communicationData[i] & 0x0FFF;	// ADC是12bit,只有低12bit有效
 			communicationData[i] *= 7;		// 声音存储前放大
 			if(i%2 == 0) {					// 每2次填充2个u8(1个u16),即抛弃掉其中一个声道?
-				partWavData[i] = p[2*i];
-				partWavData[i + 1] = p[2*i + 1];
+				writeFileBuff[i] = p[2*i];
+				writeFileBuff[i + 1] = p[2*i + 1];
 			}
 		}
-		file.write((const byte*)partWavData, 1024);	// sd/sdfat一致
+		file.write((const byte*)writeFileBuff, 1024);	// sd/sdfat一致
 	}
 	file.close();	// sd/sdfat一致
 	Serial.println("finish");
 }
+
+//record
+/*
+void setup() {
+	Serial.begin(115200);
+	delay(500);
+
+	// 初始化SD卡
+	if(!SD.begin()) {		
+		Serial.println("init sd card error");
+		return;
+	}
+
+	//打印文件	
+    listDir(SD, "/", 0);
+}
 */
 
+// 主循环
 void loop() {
 	// put your main code here, to run repeatedly:
 
