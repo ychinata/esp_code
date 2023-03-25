@@ -82,7 +82,7 @@ void WAV_Play() {	// (filename)
 		mi.Write((char*)partWavData, recvSize*2);
 	} while(recvSize>0);
 	file.close();
-	mi.End();
+	mi.End();		// 不加会有错误
 	Serial.println("finish: read wav file");
 }
 
@@ -149,6 +149,7 @@ void WAV_Record() {
 		file.write((const byte*)writeFileBuff, 1024);	// sd/sdfat一致
 	}
 	file.close();	// sd/sdfat一致
+	mi.End();		// 不加会有错误
 	Serial.println("finish");
 }
 
