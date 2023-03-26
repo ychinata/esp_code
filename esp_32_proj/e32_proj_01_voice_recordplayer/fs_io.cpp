@@ -122,6 +122,24 @@ void renameFile(fs::FS &fs, const char * path1, const char * path2){
     }
 }
 
+
+/*********************
+ * Func:   判断是否存在文件 isExistFile
+ * Author: xy
+ * Date:   2023.3.26
+ *********************/ 
+bool FSIO_SD_IsExistFile(fs::FS &fs, const char * path) {
+    Serial.printf("[Is Exist file]: %s\n", path);
+    if (fs.exists(path)){   
+        Serial.println("File exist");
+		return true;
+    } else {    // 文件不存在
+        Serial.println("File not exist");
+		return false;
+    }
+}
+
+
 // 删除文件
 void deleteFile(fs::FS &fs, const char * path){
     Serial.printf("[Deleting file]: %s\n", path);

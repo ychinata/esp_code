@@ -35,5 +35,8 @@ void deleteFile(fs::FS &fs, const char * path);
 // 测试文件IO
 void testFileIO(fs::FS &fs, const char * path);
 
+// 判断文件
+bool FSIO_SD_IsExistFile(fs::FS &fs, const char * path);
+
 #endif /* _FS_IO_H_ */
 

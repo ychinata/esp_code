@@ -26,6 +26,11 @@
 * IN -- GPIO25/26
 */
 
+#define SCK  	18
+#define MISO  	19
+#define MOSI  	23
+#define CS  	5
+
 /***************** 内部函数声明 ******************/
 void WAV_Record();
 void WAV_Play();
@@ -35,7 +40,6 @@ MyI2S mi;	// g_I2s
 const char filename[] = "/my_record_adc_2s.wav";
 const int record_time = 2;  // second, 记录音频的时长
 const int waveDataSize = record_time * 88200;
-
 
 /***************** record ******************/
 //数据流:recvI2SBuffer->writeFileBuff
@@ -55,10 +59,21 @@ void setup() {
 	delay(500);
 
 	// 初始化SD卡
+    //pinMode(CS, OUTPUT);	// 可不加
+	/*
+	// 初始化方式1
 	if(!SD.begin()) {				
 		Serial.println("init sd card error");
 		return;
 	}
+	*/
+	// 初始化方式2
+	SPIClass spi = SPIClass(VSPI);
+	spi.begin(SCK, MISO, MOSI, CS);
+	if (!SD.begin(CS, spi, 10000000)) {
+		Serial.println("init sd card error");
+		return;
+	}	
 
 	// 录音并生成wav文件, 保存在SD卡中
 	WAV_Record();
@@ -128,6 +143,11 @@ void WAV_Record() {
 	//打印文件	
     listDir(SD, "/", 0);
 
+	// 已存在文件则不重新录制
+	if (FSIO_SD_IsExistFile(SD, filename)) {
+		return;
+	}
+
 	//删除并创建文件
     deleteFile(SD, filename);
 
@@ -138,7 +158,7 @@ void WAV_Record() {
 		return;
 	}
 
-	//填充wav文件头
+	//填充wav文件头, 16bit单声道
 	auto header = CreateWaveHeader(1, 44100, 16);
 	header.riffSize = waveDataSize + 44 - 8;
 	header.dataSize = waveDataSize;
