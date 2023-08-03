@@ -16,41 +16,44 @@
  ********************************************************************************************************************************************************/
 
 #define VERSION "V1.0"
-#include <TFT_eSPI.h>
+//#include <TFT_eSPI.h>
 // general libaries
 #include <arduinoFFT.h> //libary for FFT analysis
-#include <EasyButton.h> //libary for handling buttons
+//#include <EasyButton.h> //libary for handling buttons
 
 // included files
 #include "I2SPLUGIN.h" //Setting up the ADC for I2S interface ( very fast readout)
 #include "FFT.h"       //some things for selecting the correct arrays for each number of bands
 #include "Settings.h"  // your general settings
-#include "Webstuf.h"   //This is the actual webpage housed in a variable
+//#include "Webstuf.h"   //This is the actual webpage housed in a variable
 
 // libaries for webinterface
-#include <WiFi.h>
-#include <WebServer.h>
-#include <WebSocketsServer.h>
-#include <Ticker.h>
-#include <WiFiManager.h> //The magic setup for wifi! If you need to setup your WIFI, hold the mode button during boot up.
+//#include <WiFi.h>
+//#include <WebServer.h>
+//#include <WebSocketsServer.h>
+//#include <Ticker.h>
+//#include <WiFiManager.h> //The magic setup for wifi! If you need to setup your WIFI, hold the mode button during boot up.
 
-TFT_eSPI tft = TFT_eSPI();
-TFT_eSprite clk = TFT_eSprite(&tft);
+//TFT_eSPI tft = TFT_eSPI();
+//TFT_eSprite clk = TFT_eSprite(&tft);
+
 int numBands = 64; // Default number of bands. change it by pressing the mode button
 
-TaskHandle_t tftTask;
 //************* web server setup *************************************************************************************************************************
+/*
+TaskHandle_t tftTask;
 TaskHandle_t WebserverTask;                        // setting up the task handler for webserver                                                  //**
 bool webtoken = false;                             // this is a flag so that the webserver noise when the other core has new data                //**
 WebServer server(80);                              // more webserver stuff                                                                       //**
 WiFiManager wm;                                    // Wifi Manager init                                                                          //**
 WebSocketsServer webSocket = WebSocketsServer(81); // Adding a websocket to the server                                                           //**
 //************* web server setup end**********************************************************************************************************************
-
+*/
 //*************Button setup ******************************************************************************************************************************
-EasyButton ModeBut(0); // defining the button                                                                         //**
+//EasyButton ModeBut(0); // defining the button                                                                         //**
 // Mode button 1 short press                                                                                                                          //**
 // will result in changing the number of bands                                                                                                        //**
+
 void onPressed()
 {                                                  //**
   Serial.println("Mode Button has been pressed!"); //**
@@ -67,6 +70,7 @@ void onPressed()
   SetNumberofBands(numBands);                          //**
   Serial.printf("New number of bands=%d\n", numBands); //**
 } //**
+
 //*************Button setup end***************************************************************************************************************************
 
 // Return the frequency corresponding to the Nth sample bucket.  Skips the first two
@@ -79,88 +83,91 @@ int BucketFrequency(int iBucket)
   return iOffset * (samplingFrequency / 2) / (SAMPLEBLOCK / 2);
 }
 
-void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
-{
-  // Do something with the data from the client
-  if (type == WStype_TEXT)
-  {
-    Serial.println("websocket event Triggered");
-  }
-}
+//void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
+//{
+//  // Do something with the data from the client
+//  if (type == WStype_TEXT)
+//  {
+//    Serial.println("websocket event Triggered");
+//  }
+//}
 
-void SendData()
-{
-  String json = "[";
-  for (int i = 0; i < numBands; i++)
-  {
-    if (i > 0)
-    {
-      json += ", ";
-    }
-    json += "{\"bin\":";
-    json += "\"" + labels[i] + "\"";
-    json += ", \"value\":";
-    json += String(FreqBins[i]);
-    json += "}";
-  }
-  json += "]";
-  webSocket.broadcastTXT(json.c_str(), json.length());
-}
-void SendData_tft()
-{
-  String json = "[";
-  for (int i = 0; i < numBands; i++)
-  {
-    if (i > 0)
-    {
-      json += ", ";
-    }
-    json += "{\"bin\":";
-    json += "\"" + labels[i] + "\"";
-    json += ", \"value\":";
-    json += String(FreqBins[i]);
-    json += "}";
-  }
-  json += "]";
-  Serial.println(json);
-}
+//void SendData()
+//{
+//  String json = "[";
+//  for (int i = 0; i < numBands; i++)
+//  {
+//    if (i > 0)
+//    {
+//      json += ", ";
+//    }
+//    json += "{\"bin\":";
+//    json += "\"" + labels[i] + "\"";
+//    json += ", \"value\":";
+//    json += String(FreqBins[i]);
+//    json += "}";
+//  }
+//  json += "]";
+//  webSocket.broadcastTXT(json.c_str(), json.length());
+//}
+
+//void SendData_tft()
+//{
+//  String json = "[";
+//  for (int i = 0; i < numBands; i++)
+//  {
+//    if (i > 0)
+//    {
+//      json += ", ";
+//    }
+//    json += "{\"bin\":";
+//    json += "\"" + labels[i] + "\"";
+//    json += ", \"value\":";
+//    json += String(FreqBins[i]);
+//    json += "}";
+//  }
+//  json += "]";
+//  Serial.println(json);
+//}
 
 // Task1code: webserver runs on separate core so that WIFI low signal doesn't freeze up program on other core
-void Task1code(void *pvParameters)
-{
-  delay(3000);
-  Serial.print("Webserver task is  running on core ");
-  Serial.println(xPortGetCoreID());
-  int gHue = 0;
-  for (;;)
-  {
-    wm.process();
-    webSocket.loop();
-    server.handleClient();
-    if (webtoken == true)
-    {
-      SendData(); // webbrowser
-      webtoken = false;
-    }
-  }
-}
-void task2code(void *pvParameters)
-{
-  delay(3000);
-  Serial.print("Webserver task is  running on core ");
-  Serial.println(xPortGetCoreID());
-  int gHue = 0;
-  for (;;)
-  {
+//void Task1code(void *pvParameters)
+//{
+//  delay(3000);
+//  Serial.print("Webserver task is  running on core ");
+//  Serial.println(xPortGetCoreID());
+//  int gHue = 0;
+//  for (;;)
+//  {
+//    wm.process();
+//    webSocket.loop();
+//    server.handleClient();
+//    if (webtoken == true)
+//    {
+//      SendData(); // webbrowser
+//      webtoken = false;
+//    }
+//  }
+//}
+//
+//void task2code(void *pvParameters)
+//{
+//  delay(3000);
+//  Serial.print("Webserver task is  running on core ");
+//  Serial.println(xPortGetCoreID());
+//  int gHue = 0;
+//  for (;;)
+//  {
+//
+//    if (webtoken == true)
+//    {
+//      SendData_tft(); // webbrowser
+//      Serial.printf("\nLoop() - Free Stack Space: %d", uxTaskGetStackHighWaterMark(NULL));
+//      webtoken = false;
+//    }
+//  }
+//}
 
-    if (webtoken == true)
-    {
-      SendData_tft(); // webbrowser
-      Serial.printf("\nLoop() - Free Stack Space: %d", uxTaskGetStackHighWaterMark(NULL));
-      webtoken = false;
-    }
-  }
-}
 void setup()
 {
   disableCore0WDT();
@@ -186,26 +193,30 @@ void setup()
   Serial.begin(115200);
   Serial.println("Setting up Audio Input I2S");
   pinMode(12, OUTPUT);
-  tft.init();
-  tft.setRotation(3);
-  tft.fillScreen(TFT_BLACK);
+  
+  //ftf初始化
+//  tft.init();
+//  tft.setRotation(3);
+//  tft.fillScreen(TFT_BLACK);
+//  digitalWrite(12, HIGH);
+//  tft.setTextColor(TFT_BLUE);
+//  tft.setTextFont(2);
+//  tft.drawString(" ESP-NOW", 0, 0);
 
-  digitalWrite(12, HIGH);
-  tft.setTextColor(TFT_BLUE);
-  tft.setTextFont(2);
-  tft.drawString(" ESP-NOW", 0, 0);
+  // I2S初始化
   i2s_install();
   i2s_setpin();
   i2s_start(I2S_PORT);
   Serial.println("Audio input setup completed");
-  ModeBut.begin();
-  ModeBut.onPressed(onPressed);
+  // Button初始化
+//  ModeBut.begin();
+//  ModeBut.onPressed(onPressed);
 
-  if (digitalRead(MODE_BUTTON_PIN) == 0)
-  { // reset saved settings is mode button is pressed and hold during startup
-    Serial.println("button pressed on startup, WIFI settings will be reset");
-    // wm.resetSettings();
-  }
+//  if (digitalRead(MODE_BUTTON_PIN) == 0)
+//  { // reset saved settings is mode button is pressed and hold during startup
+//    Serial.println("button pressed on startup, WIFI settings will be reset");
+//    // wm.resetSettings();
+//  }
 
   // wm.setConfigPortalBlocking(false); // Try to connect WiFi, then create AP but if no success then don't block the program
   //   If needed, it will be handled in core 0 later
@@ -225,9 +236,9 @@ void setup()
 
 void loop()
 {
-  size_t bytesRead = 0;
-  int TempADC = 0;
-  ModeBut.read();
+    size_t bytesRead = 0;
+    int TempADC = 0;
+    //ModeBut.read();
 
   //############ Step 1: read samples from the I2S Buffer ##################
   size_t bytesIn = 0;
@@ -301,22 +312,23 @@ void loop()
     allBandsPeak = 80000;
   for (int i = 0; i < numBands; i++)
     FreqBins[i] /= (allBandsPeak * 1.0f);
-  webtoken = true; // set marker so that other core can process data
-  clk.setColorDepth(8);
-  clk.createSprite(240, 135);
-  clk.fillSprite(TFT_BLACK);
+    
+//  webtoken = true; // set marker so that other core can process data
+//  clk.setColorDepth(8);
+//  clk.createSprite(240, 135);
+//  clk.fillSprite(TFT_BLACK);
   // clk.setCursor(0, 0, 2);
   // clk.setTextColor(TFT_YELLOW, TFT_BLACK);
   // clk.print(FreqBins[0]);
   uint8_t hw;
   hw = (240 - 2 * (numBands-1))/numBands;
-  for (int i = 0; i < numBands; i++)
-  {
-    clk.drawRect(hw *i + 2 * i, 135 - FreqBins[i] * 135, hw, FreqBins[i] * 135, TFT_BLUE);
-
-  }
-
-  clk.pushSprite(0, 0);
-  clk.deleteSprite();
+    // 显示
+//  for (int i = 0; i < numBands; i++) {
+//    clk.drawRect(hw *i + 2 * i, 135 - FreqBins[i] * 135, hw, FreqBins[i] * 135, TFT_BLUE);
+//
+//  }
+//  clk.pushSprite(0, 0);
+//  clk.deleteSprite();
+  
   // SendData_tft();
 } // loop end
