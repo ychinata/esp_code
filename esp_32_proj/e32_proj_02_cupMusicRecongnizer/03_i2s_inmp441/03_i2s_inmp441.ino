@@ -10,9 +10,7 @@
  *                                                                                                                                                       *
  *  Mark Donners                                                                                                                                         *
  *  The Electronic Engineer                                                                                                                              *
- *  Website:   www.theelectronicengineer.nl                                                                                                              *
- *  facebook:  https://www.facebook.com/TheelectronicEngineer                                                                                            *
- *  youtube:   https://www.youtube.com/channel/UCm5wy-2RoXGjG2F9wpDFF3w                                                                                  *
+ *  Website:   www.theelectronicengineer.nl                                                                                                              *                                                                          *
  *  github:    https://github.com/donnersm                                                                                                               *
  *                                                                                                                                                       *
  ********************************************************************************************************************************************************/

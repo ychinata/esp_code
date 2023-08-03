@@ -17,7 +17,7 @@ P32
 #define BUTTON_PIN 2
 #define DAC_PIN 25
 #define ADC_PIN 32
-#define NUM_SAMPLES 128
+#define NUM_SAMPLES 64     // 原始值为256, 修改为512会复位
 /* 设置oled屏幕的相关信息 */
 #define SDA_PIN 21                       // SDA引脚，默认gpio4
 #define SCL_PIN 22                       // SCL引脚，默认gpio5
@@ -122,7 +122,7 @@ void setup() {
     oled.display();       // 清除屏幕
     pinMode(BUTTON_PIN,INPUT);   
     analogReadResolution(12);                            //精度12位 0 --- 4095
-    analogSetPinAttenuation(ADC_PIN, ADC_11db);          //150 mV ~ 2450 mV
+    analogSetPinAttenuation(ADC_PIN, ADC_11db);          //150 mV ~ 2450 mV, 原始为11db
 
     sampling_period_us = round(1000000*(1.0/samplingFrequency)); //计算采样频率
     Serial.printf("采样频率 = Hz %f\n", samplingFrequency);
