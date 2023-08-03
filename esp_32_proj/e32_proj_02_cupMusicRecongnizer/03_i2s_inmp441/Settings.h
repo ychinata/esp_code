@@ -27,7 +27,7 @@ int NoiseTresshold =        1000;                   // this will effect the uppe
 #define ARRAYSIZE(a)    (sizeof(a)/sizeof(a[0]))
 #define ADC_INPUT ADC1_CHANNEL_0
 uint16_t offset = (int)ADC_INPUT * 0x1000 + 0xFFF;
-double vReal[SAMPLEBLOCK];
+double vReal[SAMPLEBLOCK];      /* sampleblock见i2splugin.h定义 */
 double vImag[SAMPLEBLOCK];
 int16_t samples[SAMPLEBLOCK];
 arduinoFFT FFT = arduinoFFT(); /* Create FFT object */
