@@ -37,7 +37,11 @@ void loop() {
     oled.drawString(0, 0, "ESP32 Demo");     // 将要显示的文字写入缓存
     oled.drawString(0, 16, "I love STU!");
     oled.drawString(0, 32, "I love DGPT!");
-    oled.drawString(0, 48, "2023.1.6");
+    //oled.drawString(0, 48, "2023.1.6");
+    char str[20];
+    int freqno = 100;
+    sprintf(str, "FreqNo:%d", freqno);    
+    oled.drawString(0, 48, str);
     oled.display();                     // 将缓存里的文字在屏幕上显示
     //digitalWrite(LED_BUILTIN, LOW);     // Turn the LED on
     //delay(300);
