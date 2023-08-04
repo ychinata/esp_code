@@ -5,6 +5,16 @@
 #include <driver/i2s.h>
 const i2s_port_t I2S_PORT = I2S_NUM_0; 
 
+/* INM441引脚 */
+// 03配置-波形不对！
+//#define I2S_WS 5
+//#define I2S_SD 27
+//#define I2S_SCK 26
+// 05博客原始配置
+#define I2S_WS 15
+#define I2S_SD 13
+#define I2S_SCK 2
+
 void setup() {
     Serial.begin(115200);
     Serial.println("Configuring I2S...");
@@ -27,10 +37,10 @@ void setup() {
 
     // 引脚配置
     const i2s_pin_config_t pin_config = {
-        .bck_io_num = 2,   // BCKL      //SCK引脚
-        .ws_io_num = 15,    // LRCL     //WS引脚
+        .bck_io_num = I2S_SCK,   // BCKL      //SCK引脚
+        .ws_io_num = I2S_WS,    // LRCL     //WS引脚
         .data_out_num = -1, // not used (only for speakers)
-        .data_in_num = 13   // DOUT     //SD引脚
+        .data_in_num = I2S_SD   // DOUT     //SD引脚
                                         //L/R引脚接地
     };
 
@@ -57,5 +67,5 @@ void loop() {
     if (bytes_read > 0) {
         Serial.println(sample);
     } 
-    delay(100);   //如果不延时，串口绘图器基本就是实现更新，效果非常好
+    //delay(100);   //如果不延时，串口绘图器基本就是实现更新，效果非常好
 }

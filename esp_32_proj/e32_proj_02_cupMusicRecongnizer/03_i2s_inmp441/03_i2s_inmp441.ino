@@ -105,11 +105,19 @@ void loop()
     int TempADC = 0;
     //ModeBut.read();
 
+    /*step 0: test*/
+    int32_t sample = 0;
+    int bytes_read = i2s_pop_sample(I2S_PORT, (char *)&sample, portMAX_DELAY); // no timeout
+    if (bytes_read > 0) {
+        Serial.println(sample);
+    }     
+
     //############ Step 1: read samples from the I2S Buffer ##################
     size_t bytesIn = 0;
     // 一次性读取bufferLen长度的I2S数据，比如1024个
-    esp_err_t result = i2s_read(I2S_PORT, &sBuffer, bufferLen, &bytesIn, portMAX_DELAY);
-    if (result == ESP_OK){
+//    esp_err_t result = i2s_read(I2S_PORT, &sBuffer, bufferLen, &bytesIn, portMAX_DELAY);
+//    if (result == ESP_OK){
+//    }
     // int samples_read = bytesIn / 8;
     // if (samples_read > 0)
     // {
@@ -121,13 +129,22 @@ void loop()
     //   mean /= samples_read;
     //   Serial.println(mean);
     //}
-    }
   
     //############ Step 2: compensate for Channel number and offset, safe all to vReal Array   ############
-    for (uint16_t i = 0; i < ARRAYSIZE(sBuffer); i++) {
-        vReal[i] = offset - sBuffer[i];         // offset见settings.h
-        vImag[i] = 0.0; // Imaginary part must be zeroed in case of looping to avoid wrong calculations and overflows
-    }
+    Serial.println("step2");
+//    for (uint16_t i = 0; i < ARRAYSIZE(sBuffer); i++) {
+//        vReal[i] = offset - sBuffer[i];         // offset见settings.h
+//        vImag[i] = 0.0; // Imaginary part must be zeroed in case of looping to avoid wrong calculations and overflows
+//        if (i < ARRAYSIZE(sBuffer)) {
+//            Serial.println(vReal[i]);
+//        }         
+//    }
+
+//    int32_t sample = 0;
+//    int bytes_read = i2s_pop_sample(I2S_PORT, (char *)&sample, portMAX_DELAY); // no timeout
+//    if (bytes_read > 0) {
+//        Serial.println(vReal[i]);
+//    } 
 
     //############ Step 3: Do FFT on the VReal array  ############
     // compute FFT
