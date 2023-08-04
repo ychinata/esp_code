@@ -5,6 +5,8 @@
  */
 #include "arduinoFFT.h" // 库管理器安装arduinoFFT库
 #include "SSD1306Wire.h"    // 库管理器安装ESP8266 and ESP32 OLED diver for sSD1306 displays库，搜索esp8266-oled-ssd1306
+#include "settings.h"
+#include "find_music_note.h"
 #include <driver/i2s.h>
 const i2s_port_t I2S_PORT = I2S_NUM_0;
 
@@ -17,12 +19,17 @@ const i2s_port_t I2S_PORT = I2S_NUM_0;
 #define FFT_AMP_ATTEN_FACTOR 10     // 幅值衰减因子.ADC时为100效果可以
 #define FFT_TIMEAMP_ATTEN_FACTOR 1000     // 幅值衰减因子.ADC时为100效果可以
 
-//Adafruit_SSD1306 display(100);
+
+// 
+#define FFT_SMP_RATE 10000
+
 arduinoFFT FFT = arduinoFFT();
 
 double vReal[samples];
 double vImag[samples];
 double vTemp[halfsamples];
+
+int freqNormData[OLED_PIXEL_W];  // OLED_PIXEL_W+1
 
 // 引脚配置
 // 05博客原始配置
@@ -30,17 +37,13 @@ double vTemp[halfsamples];
 #define I2S_SD 13
 #define I2S_SCK 2
 
-/* 设置oled屏幕的相关信息 */
-#define SDA_PIN 21                       // SDA引脚
-#define SCL_PIN 22                       // SCL引脚
+
 
 #define BUTTON_PIN 2
 #define DAC_PIN 25                      // 接麦克风
 #define ADC_PIN 32                      // 接扬声器
 
 /***************** 全局变量bgn *****************/
-/* 新建一个oled屏幕对象，需要输入IIC地址，SDA和SCL引脚号 */
-const int I2C_ADDR = 0x3c;              // oled屏幕的I2c地址
 SSD1306Wire oled(I2C_ADDR, SDA_PIN, SCL_PIN);
 
 
@@ -51,7 +54,7 @@ void I2S_MyInit(void) {
     // The I2S config 
     const i2s_config_t i2s_config = {
         .mode = i2s_mode_t(I2S_MODE_MASTER | I2S_MODE_RX), // Receive mode
-        .sample_rate = 16000,                         // 采样率
+        .sample_rate = FFT_SMP_RATE,                         // 采样率16000, 44100效果不好
         // could only get it to work with 32bits/24bits 
         .bits_per_sample = I2S_BITS_PER_SAMPLE_32BIT, 
         // leave L/R unconnected when using Left channel
@@ -157,23 +160,16 @@ void loop() {
     for (int i = 0; i < NUM_SAMPLES / 2; i++) {
         int x = map(i, 0, NUM_SAMPLES / 2, 0, 128);//128是屏幕像素宽度
         int y = map(vReal[i] / FFT_AMP_ATTEN_FACTOR, 0, 4095, 0, 64);      //64是屏幕像素高度
-        if (y > maxtmpY) {
-            maxtmpY = y;
-            maxtmpX = x;    
-        }
         oled.drawLine(x, 64, x, 64 - y);
+        //
+        freqNormData[x] = y;
     }    
     oled.display();
-    delay(1000);
+    delay(500);
 
-    /* 打印频点 */
-    char str[20];
-    int freqno = maxtmpX;
-    sprintf(str, "FreqNo:%d", freqno);    
-    oled.clear(); 
-    oled.setFont(ArialMT_Plain_16);     // 设置字体
-    oled.drawString(0, 48, str);    
-    oled.display();            
-    delay(1000);
+    NOTE_Show();
+    delay(500);
+
+
 //    delay(20);  //改为128点时可以注释掉，防止刷新太慢    
 }
