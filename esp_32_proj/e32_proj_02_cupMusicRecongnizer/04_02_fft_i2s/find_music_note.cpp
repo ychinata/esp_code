@@ -18,6 +18,8 @@
 #include "find_music_note.h"
 #include "SSD1306Wire.h"    // 库管理器安装ESP8266 and ESP32 OLED diver for sSD1306 displays库，搜索esp8266-oled-ssd1306
 #include "settings.h"
+
+#define FIND_START 20  // 依据观察，跳过左边屏幕x个点，低频干扰严重
  
 extern int freqNormData[OLED_PIXEL_W];  //x方向
 extern SSD1306Wire oled;
@@ -27,8 +29,8 @@ void NOTE_FindMaxNum(int* maxx, int* maxy)
 {
     int maxtmpx = 0;
     int maxtmpy = 0;
-    int startx = 10; // 依据观察，跳过左边屏幕10个点，低频干扰严重
-    for (int i = startx; i < OLED_PIXEL_W; i++) {
+
+    for (int i = FIND_START; i < OLED_PIXEL_W; i++) {
         if (freqNormData[i] > maxtmpy) {
             maxtmpy = freqNormData[i];
             maxtmpx = i;
@@ -36,25 +38,70 @@ void NOTE_FindMaxNum(int* maxx, int* maxy)
     }
     *maxx = maxtmpx;
     *maxy = maxtmpy;
-    Serial.println("maxx"); 
-    Serial.println(maxtmpx);        
+//    Serial.println("maxx"); 
+//    Serial.println(maxtmpx);        
 }
 
 // 寻找第二谱峰
-
+void NOTE_FindSecondNum(int* x, int* y, int maxx)
+{
+    //跳过最大谱峰±3的谱线
+    int maxtmpx = 0;
+    int maxtmpy = 0;
+    
+    int skip_left, skip_right;
+    // 防止越界
+    if (maxx + 3 >= 128) {
+        skip_right = 127;
+    } else {
+        skip_right = maxx + 3;
+    }
+    // 左边从startx开始，不会越界
+    skip_left = maxx - 3;
+    
+    
+    for (int i = FIND_START; i < OLED_PIXEL_W; i++) {
+        if (i >= skip_left && i <= skip_right) {
+            continue;
+        }
+        if (freqNormData[i] > maxtmpy) {
+            maxtmpy = freqNormData[i];
+            maxtmpx = i;
+        }
+    }
+    *x = maxtmpx;
+    *y = maxtmpy;
+//    Serial.println("maxx"); 
+//    Serial.println(maxtmpx);      
+}
 
 void NOTE_Show(void)
 {
     char str[20];
-    int maxx = 1, maxy;
-    int freqno;
+    int maxx, maxy, sndx, sndy;
     
     NOTE_FindMaxNum(&maxx, &maxy);
-    freqno = maxx;
-    sprintf(str, "FreqNo:%d", freqno);    
+    NOTE_FindSecondNum(&sndx, &sndy, maxx);        
+    
+    sprintf(str, "FreqNo:%d,%d", maxx, sndx);    
     oled.clear(); 
     oled.setFont(ArialMT_Plain_16);     // 设置字体
     oled.drawString(0, 48, str);    
     oled.display();        
+    Serial.println(str);
 }
 
+//20230804 晚, 1024fft, 10kHz
+/*
+200ml:27/68
+180ml:30/74
+160ml:33/81
+140ml:34/85
+120ml:36/91
+100ml:37/95
+80ml :39/102
+60ml :40/108
+40ml :40/109
+0ml  :38/105
+
+*/
