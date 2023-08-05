@@ -24,7 +24,7 @@
 //double bndcounter[64];
 
 void NOTE_FindMaxNum(int* maxx, int* maxy);
-void NOTE_Show(void);
+int NOTE_FindMaxNo(void);
 
 
 #endif

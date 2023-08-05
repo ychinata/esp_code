@@ -71,7 +71,7 @@ void NOTE_FindSecondNum(int* x, int* y, int maxx)
 //    Serial.println(maxtmpx);      
 }
 
-void NOTE_Show(void)
+int NOTE_FindMaxNo(void)
 {
     char str[20], str2[20];
     int maxx, maxy, sndx, sndy;
@@ -93,24 +93,10 @@ void NOTE_Show(void)
 	sprintf(str2, "Max:%d", maxx);
     oled.clear(); 
     oled.setFont(ArialMT_Plain_16);     // 设置字体
-    oled.drawString(0, OLED_FONT16_LINE_3, str);    	// 显示在第三行
-    oled.drawString(0, OLED_FONT16_LINE_4, str2);    	// 显示在第四行
+    oled.drawString(0, OLED_FONT16_LINE_3, str);    	// 显示在第三行, 最大的两个频点并排序
+    oled.drawString(0, OLED_FONT16_LINE_4, str2);    	// 显示在第四行, 最大的频点
     oled.display();        
     Serial.println(str);
+	return maxx;
 }
-
-//20230804 晚, 1024fft, 10kHz
-/*
-200ml:27/68
-180ml:30/74
-160ml:33/81
-140ml:34/85
-120ml:36/91
-100ml:37/95
-80ml :39/102
-60ml :40/108
-40ml :40/109
-0ml  :38/105
-
-*/
 

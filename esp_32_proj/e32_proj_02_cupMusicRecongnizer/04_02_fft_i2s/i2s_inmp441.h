@@ -15,57 +15,60 @@
  *  github:    https://github.com/donnersm                                                                                                               *
  *                                                                                                                                                       *  
  ********************************************************************************************************************************************************/
-#ifndef __SETTINGS_H__
-#define __SETTINGS_H__ 	
+#ifndef __INMP441_I2S_H__
+#define __INMP441_I2S_H__ 	
 
-#define MODE_BUTTON_PIN     0
+void I2S_MyInit(void);
+
+#include <driver/i2s.h>
+
+// 为什么放在inmp441.c会报错?
+const i2s_port_t I2S_PORT = I2S_NUM_0;
 
 
-/************* 设置引脚-begin **************/
-// OLED引脚
-#define SDA_PIN 21                       // SDA引脚
-#define SCL_PIN 22                       // SCL引脚
+ void I2S_MyInit(void) {	
+	 esp_err_t err;
+	 
+	 Serial.println("Configuring I2S...");	  
+	 // The I2S config 
+	 const i2s_config_t i2s_config = {
+		 .mode = i2s_mode_t(I2S_MODE_MASTER | I2S_MODE_RX), // Receive mode
+		 .sample_rate = FFT_SMP_RATE,						  // 采样率16000, 44100效果不好
+		 // could only get it to work with 32bits/24bits 
+		 .bits_per_sample = I2S_BITS_PER_SAMPLE_32BIT, 
+		 // leave L/R unconnected when using Left channel
+		 .channel_format = I2S_CHANNEL_FMT_ONLY_LEFT, 
+		 // Philips standard | MSB first standard
+		 .communication_format = i2s_comm_format_t(I2S_COMM_FORMAT_I2S| I2S_COMM_FORMAT_I2S_MSB),
+		 .intr_alloc_flags = ESP_INTR_FLAG_LEVEL1,	   // Interrupt level 1
+		 .dma_buf_count = 4,						   // number of buffers
+		 .dma_buf_len = 8						  // 8 samples per buffer (minimum)
+	 };
+ 
+	 // 引脚配置
+	 const i2s_pin_config_t pin_config = {
+		 .bck_io_num = I2S_SCK,   // BCKL	   //SCK引脚
+		 .ws_io_num = I2S_WS,	 // LRCL	 //WS引脚
+		 .data_out_num = -1, // not used (only for speakers)
+		 .data_in_num = I2S_SD	 // DOUT	 //SD引脚
+										 //L/R引脚接地
+	 };
+ 
+	 // Configuring the I2S driver and pins.
+	 // This function must be called before any I2S driver read/write operations.
+	 err = i2s_driver_install(I2S_PORT, &i2s_config, 0, NULL);
+	 if (err != ESP_OK) {
+		 Serial.printf("Failed installing driver: %d\n", err);
+		 while (true);
+	 }
+	 err = i2s_set_pin(I2S_PORT, &pin_config);
+	 if (err != ESP_OK) {
+		 Serial.printf("Failed setting pin: %d\n", err);
+		 while (true);
+	 }
+	 Serial.println("I2S driver installed.");		 
+ }
 
-// INMP441麦克风I2S, 如果用ADC麦克风此三个引脚不需要
-#define I2S_WS 15
-#define I2S_SD 13
-#define I2S_SCK 2
 
-#define BUTTON_PIN 2
-// 接麦克风
-#define DAC_PIN 25                      
-
-// 接扬声器MAX4466,如果用INMP441此引脚不需要
-#define ADC_PIN 32                      
-
-/************* 设置引脚-end **************/
-
-/************* 设置参数-begin **************/
-// FFT配置：最重要是采样率和FFT采样点为
-#define FFT_SMP_NUM 1024 //FFT采样点数，2的N次幂.可以换成64/128/256/512/1024等看效果，必须是2^n
-#define FFT_SMP_RATE 6000  // 采样率10kHz谱线在屏幕中间靠左, 6KHz谱线在屏幕靠右
-
-#define FFT_SMP_NUM_HALF FFT_SMP_NUM/2
-
-#define FFT_AMP_ATTEN_FACTOR 10     // 幅值衰减因子.ADC时为100效果可以.INMP441用10效果可以
-#define FFT_TIMEAMP_ATTEN_FACTOR 1000     // 幅值衰减因子.ADC时为100效果可以.INMP441用1000效果可以
-/************* 设置参数-end **************/
-
-// FFT寻峰参数
-// 用128点太粗糙, 考虑用512点
-#define FIND_PEAK_SCALE_FACTOR 4	// 512是128的四倍
-#define FFT_FINDPEAK_H 64		//
-#define FFT_FINDPEAK_W 512		// FFT寻峰用的点数,可以映射到OLED的128点
-#define FFT_FIND_SKIP_NUM (10*FIND_PEAK_SCALE_FACTOR)		//跳过最大谱峰± FFT_FIND_SKIP_NUM 的谱线
-#define FIND_START (20*FIND_PEAK_SCALE_FACTOR)  // 依据观察，跳过左边屏幕x个点，低频干扰严重
-
-/* 新建一个oled屏幕对象，需要输入IIC地址，SDA和SCL引脚号 */
-const int I2C_ADDR = 0x3c;              // oled屏幕的I2c地址
-
-//OLED宏定义
-#define OLED_FONT16_LINE_1	0
-#define OLED_FONT16_LINE_2	16
-#define OLED_FONT16_LINE_3	32
-#define OLED_FONT16_LINE_4	48
 
 #endif
