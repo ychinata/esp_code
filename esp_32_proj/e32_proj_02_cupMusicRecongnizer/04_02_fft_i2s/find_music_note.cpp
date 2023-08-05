@@ -8,23 +8,19 @@
  *                                                                                                                                                       *
  *                                                                                                                                                       * 
  *  Mark Donners                                                                                                                                         *
- *  The Electronic Engineer                                                                                                                              *
- *  Website:   www.theelectronicengineer.nl                                                                                                              *
- *  facebook:  https://www.facebook.com/TheelectronicEngineer                                                                                            *
- *  youtube:   https://www.youtube.com/channel/UCm5wy-2RoXGjG2F9wpDFF3w                                                                                  *
+ *  The Electronic Engineer                                                                                                                              *                                                                                *
  *  github:    https://github.com/donnersm                                                                                                               *
  *                                                                                                                                                       *  
  ********************************************************************************************************************************************************/
 #include "find_music_note.h"
-#include "SSD1306Wire.h"    // ¿â¹ÜÀíÆ÷°²×°ESP8266 and ESP32 OLED diver for sSD1306 displays¿â£¬ËÑË÷esp8266-oled-ssd1306
+#include "SSD1306Wire.h"    // åº“ç®¡ç†å™¨å®‰è£…ESP8266 and ESP32 OLED diver for sSD1306 displaysåº“ï¼Œæœç´¢esp8266-oled-ssd1306
 #include "settings.h"
 
-#define FIND_START 20  // ÒÀ¾İ¹Û²ì£¬Ìø¹ı×ó±ßÆÁÄ»x¸öµã£¬µÍÆµ¸ÉÈÅÑÏÖØ
  
-extern int freqNormData[OLED_PIXEL_W];  //x·½Ïò
+extern int freqNormData[OLED_PIXEL_W];  //xæ–¹å‘
 extern SSD1306Wire oled;
 
-// Ñ°ÕÒ×î´óÆ×·å
+// å¯»æ‰¾æœ€å¤§è°±å³°
 void NOTE_FindMaxNum(int* maxx, int* maxy)
 {
     int maxtmpx = 0;
@@ -42,22 +38,22 @@ void NOTE_FindMaxNum(int* maxx, int* maxy)
 //    Serial.println(maxtmpx);        
 }
 
-// Ñ°ÕÒµÚ¶şÆ×·å
+// å¯»æ‰¾ç¬¬äºŒè°±å³°
 void NOTE_FindSecondNum(int* x, int* y, int maxx)
 {
-    //Ìø¹ı×î´óÆ×·å¡À3µÄÆ×Ïß
+    //è·³è¿‡æœ€å¤§è°±å³°Â± FFT_FIND_SKIP_NUM çš„è°±çº¿
     int maxtmpx = 0;
     int maxtmpy = 0;
     
     int skip_left, skip_right;
-    // ·ÀÖ¹Ô½½ç
-    if (maxx + 3 >= 128) {
+    // é˜²æ­¢è¶Šç•Œ
+    if (maxx + FFT_FIND_SKIP_NUM >= 128) {
         skip_right = 127;
     } else {
-        skip_right = maxx + 3;
+        skip_right = maxx + FFT_FIND_SKIP_NUM;
     }
-    // ×ó±ß´Óstartx¿ªÊ¼£¬²»»áÔ½½ç
-    skip_left = maxx - 3;
+    // å·¦è¾¹ä»startxå¼€å§‹ï¼Œä¸ä¼šè¶Šç•Œ
+    skip_left = maxx - FFT_FIND_SKIP_NUM;
     
     
     for (int i = FIND_START; i < OLED_PIXEL_W; i++) {
@@ -79,19 +75,29 @@ void NOTE_Show(void)
 {
     char str[20];
     int maxx, maxy, sndx, sndy;
+    int xl, xh;	// xlæ˜¯å±å¹•å·¦è¾¹çš„ç‚¹,å¯¹åº”è¾ƒä½é¢‘
     
     NOTE_FindMaxNum(&maxx, &maxy);
     NOTE_FindSecondNum(&sndx, &sndy, maxx);        
     
-    sprintf(str, "FreqNo:%d,%d", maxx, sndx);    
+    // æ¯”è¾ƒå¤§å°
+    if (maxx > sndx) {
+        xh = maxx;
+        xl = sndx;
+    } else {
+        xh = sndx;
+        xl = maxx;
+    }
+    
+    sprintf(str, "FreqNo:%d,%d", xl, xh);    
     oled.clear(); 
-    oled.setFont(ArialMT_Plain_16);     // ÉèÖÃ×ÖÌå
+    oled.setFont(ArialMT_Plain_16);     // è®¾ç½®å­—ä½“
     oled.drawString(0, 48, str);    
     oled.display();        
     Serial.println(str);
 }
 
-//20230804 Íí, 1024fft, 10kHz
+//20230804 æ™š, 1024fft, 10kHz
 /*
 200ml:27/68
 180ml:30/74

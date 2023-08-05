@@ -16,12 +16,7 @@ const i2s_port_t I2S_PORT = I2S_NUM_0;
 #define halfsamples samples/2
 #define NumofCopy halfsamples*sizeof(double)
 #define Interval 128/(halfsamples)
-#define FFT_AMP_ATTEN_FACTOR 10     // 幅值衰减因子.ADC时为100效果可以
-#define FFT_TIMEAMP_ATTEN_FACTOR 1000     // 幅值衰减因子.ADC时为100效果可以
 
-
-// 
-#define FFT_SMP_RATE 10000
 
 arduinoFFT FFT = arduinoFFT();
 
