@@ -17,7 +17,7 @@
 #include "settings.h"
 
  
-extern int freqNormData[OLED_PIXEL_W];  //x方向
+extern int freqNormData[FFT_FINDPEAK_W];  //x方向
 extern SSD1306Wire oled;
 
 // 寻找最大谱峰
@@ -26,7 +26,7 @@ void NOTE_FindMaxNum(int* maxx, int* maxy)
     int maxtmpx = 0;
     int maxtmpy = 0;
 
-    for (int i = FIND_START; i < OLED_PIXEL_W; i++) {
+    for (int i = FIND_START; i < FFT_FINDPEAK_W; i++) {
         if (freqNormData[i] > maxtmpy) {
             maxtmpy = freqNormData[i];
             maxtmpx = i;
@@ -47,8 +47,8 @@ void NOTE_FindSecondNum(int* x, int* y, int maxx)
     
     int skip_left, skip_right;
     // 防止越界
-    if (maxx + FFT_FIND_SKIP_NUM >= 128) {
-        skip_right = 127;
+    if (maxx + FFT_FIND_SKIP_NUM >= FFT_FINDPEAK_W) {
+        skip_right = FFT_FINDPEAK_W - 1;
     } else {
         skip_right = maxx + FFT_FIND_SKIP_NUM;
     }
@@ -56,7 +56,7 @@ void NOTE_FindSecondNum(int* x, int* y, int maxx)
     skip_left = maxx - FFT_FIND_SKIP_NUM;
     
     
-    for (int i = FIND_START; i < OLED_PIXEL_W; i++) {
+    for (int i = FIND_START; i < FFT_FINDPEAK_W; i++) {
         if (i >= skip_left && i <= skip_right) {
             continue;
         }
@@ -73,7 +73,7 @@ void NOTE_FindSecondNum(int* x, int* y, int maxx)
 
 void NOTE_Show(void)
 {
-    char str[20];
+    char str[20], str2[20];
     int maxx, maxy, sndx, sndy;
     int xl, xh;	// xl是屏幕左边的点,对应较低频
     
@@ -90,9 +90,11 @@ void NOTE_Show(void)
     }
     
     sprintf(str, "FreqNo:%d,%d", xl, xh);    
+	sprintf(str2, "Max:%d", maxx);
     oled.clear(); 
     oled.setFont(ArialMT_Plain_16);     // 设置字体
-    oled.drawString(0, 48, str);    
+    oled.drawString(0, OLED_FONT16_LINE_3, str);    	// 显示在第三行
+    oled.drawString(0, OLED_FONT16_LINE_4, str2);    	// 显示在第四行
     oled.display();        
     Serial.println(str);
 }
@@ -111,3 +113,4 @@ void NOTE_Show(void)
 0ml  :38/105
 
 */
+

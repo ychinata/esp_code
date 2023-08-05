@@ -8,39 +8,47 @@
 #include "settings.h"
 #include "find_music_note.h"
 #include <driver/i2s.h>
-const i2s_port_t I2S_PORT = I2S_NUM_0;
+
 
 // FFT配置
 #define samples 1024 //采样点数，2的N次幂.可以换成64/128/256/512/1024等看效果，必须是2^n
 #define NUM_SAMPLES 1024 // 要和samples保持一致
 #define halfsamples samples/2
-#define NumofCopy halfsamples*sizeof(double)
-#define Interval 128/(halfsamples)
+#define NumofCopy halfsamples*sizeof(double)	// 不需要
 
+
+/***************** 全局变量bgn *****************/
+SSD1306Wire oled(I2C_ADDR, SDA_PIN, SCL_PIN);
 
 arduinoFFT FFT = arduinoFFT();
 
+// FFT寻峰数组
+int freqNormData[FFT_FINDPEAK_W];
+
+// FFT运算变量
 double vReal[samples];
 double vImag[samples];
 double vTemp[halfsamples];
 
-int freqNormData[OLED_PIXEL_W];  // OLED_PIXEL_W+1
+const i2s_port_t I2S_PORT = I2S_NUM_0;
+
+
+/***************** 全局变量end *****************/
+
 
 // 引脚配置
-// 05博客原始配置
+// INMP441麦克风
 #define I2S_WS 15
 #define I2S_SD 13
 #define I2S_SCK 2
 
 
-
 #define BUTTON_PIN 2
 #define DAC_PIN 25                      // 接麦克风
-#define ADC_PIN 32                      // 接扬声器
+#define ADC_PIN 32                      // 接扬声器MAX4466,如果用INMP441此引脚不需要
 
-/***************** 全局变量bgn *****************/
-SSD1306Wire oled(I2C_ADDR, SDA_PIN, SCL_PIN);
 
+/***************** 函数定义开始 *****************/
 
 void I2S_MyInit(void) {    
     esp_err_t err;
@@ -157,7 +165,7 @@ void loop() {
         int y = map(vReal[i] / FFT_AMP_ATTEN_FACTOR, 0, 4095, 0, 64);      //64是屏幕像素高度
         oled.drawLine(x, 64, x, 64 - y);
         //
-        freqNormData[x] = y;
+        freqNormData[i] = y;
     }    
     oled.display();
     delay(500);
@@ -168,3 +176,4 @@ void loop() {
 
 //    delay(20);  //改为128点时可以注释掉，防止刷新太慢    
 }
+
