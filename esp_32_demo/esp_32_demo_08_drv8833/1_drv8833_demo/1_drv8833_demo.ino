@@ -17,27 +17,29 @@ void loop() {
  
     CAR_ForwardAll(speed);  // 前进ok
     delay(2000); 
-    CAR4_StopF();
-    delay(1000); 
-    CAR_BackwardAll(speed); // 单独后退ok
-    delay(2000);
-    CAR4_StopB();
-    delay(1000);
-    /*
     CAR4_ForwardLeft(speed);    // 前左转ok
     delay(2000); 
-    CAR4_ForwardRight(speed);   // 前右转ok
-    delay(2000);    
+
+    CAR4_StopF();//准备后转
     CAR4_BackwardLeft(speed);   // 后左转
-    delay(2000);
+    delay(2000);    
+    CAR4_StopF();
+
+    CAR4_StopB();//准备前转
+    CAR4_ForwardRight(speed);   // 前右转ok
+    delay(2000); 
+
+    CAR4_StopF();//准备后转
     CAR4_BackwardRight(speed);  // 后右转
+    delay(2000);    
+    CAR_BackwardAll(speed); // 单独后退ok
     delay(2000);
+    CAR4_StopB();//准备前转
+
+    /*
+
+   
      */
-
-
-
-
-
 }
 
 //LF-RF-LB-RB
