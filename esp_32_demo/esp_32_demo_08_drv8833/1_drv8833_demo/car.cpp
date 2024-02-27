@@ -93,28 +93,64 @@ void Back(unsigned int pwm){  //后退
     motor_Speed(pwm,pwm);
 }
 
-void topLeft(unsigned int pwm){    //前进左转
+//前进左转
+/*
+void topLeft(unsigned int pwm){    
     motordir(0,1,0,1);
     pwm=pwm+10; if(pwm>=255)pwm=255;
     motor_Speed(pwm*1/5,pwm);
 }
+*/
+void CAR4_ForwardLeft(unsigned int speed) {
+    DRV8833_LF_Forward(speed/MOTER_SPEEDDIV);
+    DRV8833_RF_Forward(speed);
+    DRV8833_LB_Forward(speed/MOTER_SPEEDDIV);
+    DRV8833_RB_Forward(speed);
+}
 
-void topRight(unsigned int pwm){   //前进右转
+//前进右转
+/*
+void topRight(unsigned int pwm){   
     motordir(0,1,0,1);
     pwm=pwm+10; if(pwm>=255)pwm=255;
     motor_Speed(pwm,pwm*1/5);
 }
+*/
+void CAR4_ForwardRight(unsigned int speed) {
+    DRV8833_LF_Forward(speed);
+    DRV8833_RF_Forward(speed/MOTER_SPEEDDIV);
+    DRV8833_LB_Forward(speed);
+    DRV8833_RB_Forward(speed/MOTER_SPEEDDIV);
+}
 
-void bottomLeft(unsigned int pwm){    //后退左转
+//后退左转
+/*
+void bottomLeft(unsigned int pwm){    
     motordir(1,0,1,0);
     pwm=pwm+10; if(pwm>=255)pwm=255;
     motor_Speed(pwm*1/5,pwm);
 }
+*/
+void CAR4_BackwardLeft(unsigned int speed) {
+    DRV8833_LF_Backward(speed/MOTER_SPEEDDIV);
+    DRV8833_RF_Backward(speed);
+    DRV8833_LB_Backward(speed/MOTER_SPEEDDIV);
+    DRV8833_RB_Backward(speed);
+}
 
-void bottomRight(unsigned int pwm){   //后退右转
+//后退右转
+/*
+void bottomRight(unsigned int pwm){   
     motordir(1,0,1,0);
     pwm=pwm+10; if(pwm>=255)pwm=255;
     motor_Speed( pwm,pwm*1/5 );
+}
+*/
+void CAR4_BackwardRight(unsigned int speed) {
+    DRV8833_LF_Backward(speed);
+    DRV8833_RF_Backward(speed/MOTER_SPEEDDIV);
+    DRV8833_LB_Backward(speed);
+    DRV8833_RB_Backward(speed/MOTER_SPEEDDIV);
 }
 
 void niShiZhen(unsigned int pwm){    //原地逆时针旋转
@@ -136,6 +172,35 @@ void Stop(){    //停车
   motor_Speed(0,0);
 }
 
+void CAR4_StopF(void) {
+    int speed = 0;
+    CAR_ForwardAll(speed);
+/*
+    digitalWrite(BIN1,0);  
+    digitalWrite(BIN2,0);  
+    digitalWrite(AIN1,0);    
+    digitalWrite(AIN2,0);
+    digitalWrite(BACK_AIN1,0);    
+    digitalWrite(BACK_AIN2,0); 
+    digitalWrite(BACK_BIN1,0);
+    digitalWrite(BACK_BIN2,0);         
+*/
+}
+
+void CAR4_StopB(void) {
+    int speed = 0;
+    CAR_BackwardAll(speed);
+/*
+    digitalWrite(BIN1,1);  
+    digitalWrite(BIN2,1);  
+    digitalWrite(AIN1,1);    
+    digitalWrite(AIN2,1);
+    digitalWrite(BACK_AIN1,1);    
+    digitalWrite(BACK_AIN2,1); 
+    digitalWrite(BACK_BIN1,1);
+    digitalWrite(BACK_BIN2,1);         
+*/
+}
 
 //=======================================
 

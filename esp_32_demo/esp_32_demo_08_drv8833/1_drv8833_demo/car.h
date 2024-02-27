@@ -50,8 +50,32 @@ void Right90(); //右转90度
 void Turn_round(); //掉头
 /****************************************************/
 
+// 2024.2.27 new
 
+#define MOTER_SPEEDDIV  2   // 减速因子
 
+// 单轮控制
+void DRV8833_LF_Forward(unsigned int speed);
+void DRV8833_LB_Forward(unsigned int speed);
+void DRV8833_LF_Backward(unsigned int speed);
+void DRV8833_LB_Backward(unsigned int speed);
+void DRV8833_RF_Forward(unsigned int speed);
+void DRV8833_RB_Forward(unsigned int speed);
+void DRV8833_RF_Backward(unsigned int speed);
+void DRV8833_RB_Backward(unsigned int speed);
 
+// 两轮控制todo
 
+// 四轮控制
+void CAR4_ForwardLeft(unsigned int speed);
+void CAR4_ForwardRight(unsigned int speed);
+void CAR4_BackwardLeft(unsigned int speed);
+void CAR4_BackwardRight(unsigned int speed);
+
+void CAR_ForwardAll(unsigned int speed);
+void CAR_BackwardAll(unsigned int speed);
+
+void CAR4_Stop(void);
+void CAR4_StopF(void);
+void CAR4_StopB(void);
 #endif
