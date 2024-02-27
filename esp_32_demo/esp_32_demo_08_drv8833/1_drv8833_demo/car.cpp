@@ -157,20 +157,33 @@ void niShiZhen(unsigned int pwm){    //原地逆时针旋转
     motordir(1,0,0,1);
     motor_Speed( pwm,pwm );
 }
- 
-void shunShiZhen(unsigned int pwm){   //原地顺时针旋转
+
+//原地顺时针旋转
+void shunShiZhen(unsigned int pwm){   
     motordir(0,1,1,0);
     motor_Speed( pwm,pwm );
 }
+
+void CAR4_Clkwise(unsigned int speed) {
+    // 顺时针，左前右后, 2s大概可以转90度
+    DRV8833_LF_Forward(speed);
+    DRV8833_LB_Forward(speed);
+    DRV8833_RF_Backward(speed);
+    DRV8833_RB_Backward(speed);     
+}
   
-void Stop(){    //停车
+//停车
+
+void Stop(){    
   digitalWrite(AIN2,LOW);
   digitalWrite(AIN1,LOW);
   digitalWrite(BIN1,LOW);
   digitalWrite(BIN2,LOW);
-/*下面这句可以不写*/  
+//下面这句可以不写
   motor_Speed(0,0);
 }
+/*
+*/
 
 void CAR4_StopF(void) {
     int speed = 0;

@@ -5,14 +5,24 @@ Date:2024.1.10
 */
 
 void setup() {
-  // put your setup code here, to run once:
-    
+    // put your setup code here, to run once:    
     Serial.begin(115200);
     Car_Init();
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
+    // put your main code here, to run repeatedly:
+    CAR_Test2();
+}
+
+void CAR_Test2(void) {
+    int speed = 255;    //     
+    CAR4_Clkwise(speed);
+    delay(2000);
+}
+
+// success
+void CAR_Test1(void) {
     int speed = 255;    // 
  
     CAR_ForwardAll(speed);  // 前进ok
@@ -35,11 +45,6 @@ void loop() {
     CAR_BackwardAll(speed); // 单独后退ok
     delay(2000);
     CAR4_StopB();//准备前转
-
-    /*
-
-   
-     */
 }
 
 //LF-RF-LB-RB

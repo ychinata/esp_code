@@ -78,4 +78,7 @@ void CAR_BackwardAll(unsigned int speed);
 void CAR4_Stop(void);
 void CAR4_StopF(void);
 void CAR4_StopB(void);
+
+void CAR4_Clkwise(unsigned int speed);
+
 #endif
