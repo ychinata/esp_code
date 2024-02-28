@@ -8,7 +8,7 @@
 U2-AIN16/4,BIN17/18
 */
 
-// foreward wheel
+// foreward wheel//应该是后轮
 #define PWMA 25
 #define AIN1 25
 #define AIN2 33
@@ -17,7 +17,7 @@ U2-AIN16/4,BIN17/18
 #define BIN1 26
 #define BIN2 27
 
-//backward wheel
+//backward wheel//应该是前轮
 #define BACK_PWMA 16
 #define BACK_AIN1 16
 #define BACK_AIN2 4

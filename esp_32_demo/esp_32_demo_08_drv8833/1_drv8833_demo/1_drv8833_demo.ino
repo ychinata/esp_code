@@ -12,7 +12,9 @@ void setup() {
 
 void loop() {
     // put your main code here, to run repeatedly:
-    CAR_Test2();
+    //CAR_Test2();
+    int speed = 255;
+    //CAR_ForwardAll(speed);  // 前进ok
 }
 
 void CAR_Test2(void) {

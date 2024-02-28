@@ -28,6 +28,17 @@ void Car_Init()
     Motor_ForwardInit();
     Motor_BackwardInit();
     Stop(); /*初始停止转动*/
+
+    digitalWrite(BACK_AIN1,1);    
+    digitalWrite(BACK_AIN2,0); 
+    digitalWrite(BACK_BIN1,1);
+    digitalWrite(BACK_BIN2,0); 
+
+    digitalWrite(BIN1,1);  //26
+    digitalWrite(BIN2,0);  //27
+    digitalWrite(AIN1,1);  //25
+    digitalWrite(AIN2,0);  //33    
+
 }
 
 
