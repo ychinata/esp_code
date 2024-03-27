@@ -13,8 +13,8 @@ void setup() {
 void loop() {
     // put your main code here, to run repeatedly:
     //CAR_Test2();
-    int speed = 255;
-    //CAR_ForwardAll(speed);  // 前进ok
+    int speed = 255;	// 电机死区待确认30
+    CAR_ForwardAll(speed);  // 前进ok
 }
 
 void CAR_Test2(void) {
@@ -97,7 +97,7 @@ void DRV8833_LB_Forward(unsigned int speed)
 {
     // LB
     digitalWrite(BACK_AIN1, 0);    
-    //digitalWrite(BACK_AIN2,1); 
+    digitalWrite(BACK_AIN2,1); 
     MOTOR_SetSpeed(BACK_AIN2, speed); 
 }
 
