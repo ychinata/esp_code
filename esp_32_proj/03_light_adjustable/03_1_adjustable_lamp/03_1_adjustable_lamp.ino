@@ -44,9 +44,9 @@ void loop() {
     brightValue = ROTARYENCODER_GetData();          // 获取编码器设定的亮度值
     ledPwmValue = map(brightValue, 0, 360, 0, 255); // 将编码器原始值0-360映射到pwm值0-255,超出0-360的范围会重新映射
     //LED_SetPinPwm(LED_PIN, ledPwmValue);            // 调光
-
+    // 点灯
     LED_LightWarm();
-
+    LED_LightWhite();
     
     ROTARYENCODER_Show();       // 调光值维测
     //Serial.println(ledPwmValue);
@@ -55,19 +55,21 @@ void loop() {
 }
 
 void LED_LightWarm() {
-  int ledPwmValue = 255;
-  LED_SetPinPwm(LED_PIN_G1, ledPwmValue); 
+  int ledPwmValue = 55;
+  LED_SetPinPwm(LED_PIN_G2, ledPwmValue); 
+  LED_SetPinPwm(LED_PIN_R2, ledPwmValue);
 }
 
 void LED_LightWhite() {
-  
+  int ledPwmValue = 55;
+  LED_SetPinPwm(LED_PIN_G1, ledPwmValue); 
+  LED_SetPinPwm(LED_PIN_R1, ledPwmValue); 
+  LED_SetPinPwm(LED_PIN_B1, ledPwmValue);     
 }
 
-void work3() {
-    int lights = analogRead(A2);
-    //Serial.println(lights);
-    int lights_secound = map(lights, 0, 1023, 0, 127);
-//  Serial.print("xxx");
+void LED_LightWarmWhite() {
+  LED_LightWhite(); 
+  LED_LightWarm();    
 }
 
 // 有连接灯板吗?
