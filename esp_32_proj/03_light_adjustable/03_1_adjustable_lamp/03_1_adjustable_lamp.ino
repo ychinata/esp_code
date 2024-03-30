@@ -16,6 +16,8 @@
 #define LED_PIN_B1 26   // D5
 #define LED_PIN_G2 25   // D5
 #define LED_PIN_R2 27   // D5
+
+int keyPin = 12;        //按键所接的GPIO口
 //
 
 void setup() {
@@ -55,16 +57,13 @@ void loop() {
 }
 
 void LED_LightWarm() {
-  int ledPwmValue = 55;
-  LED_SetPinPwm(LED_PIN_G2, ledPwmValue); 
-  LED_SetPinPwm(LED_PIN_R2, ledPwmValue);
+  int ledPwmValue = 100;
+  LED_SetPinPwm(LED_PIN_R1, ledPwmValue);
 }
 
 void LED_LightWhite() {
-  int ledPwmValue = 55;
-  LED_SetPinPwm(LED_PIN_G1, ledPwmValue); 
-  LED_SetPinPwm(LED_PIN_R1, ledPwmValue); 
-  LED_SetPinPwm(LED_PIN_B1, ledPwmValue);     
+  int ledPwmValue = 100;
+  LED_SetPinPwm(LED_PIN_G1, ledPwmValue);    
 }
 
 void LED_LightWarmWhite() {
