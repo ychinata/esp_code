@@ -5,9 +5,9 @@
 int KEY_IsPressDown(void)
 {
     int isKeyPressDown = LOW;
-    if (digitalRead(keyPin) == LOW) {       // 按键按下
+    if (digitalRead(KEY_PIN) == LOW) {       // 按键按下
         delay(20);                          // 延时消抖
-        while (digitalRead(keyPin) == LOW); // 等待松手
+        while (digitalRead(KEY_PIN) == LOW); // 等待松手
         delay(20);                          // 延时消抖
         isKeyPressDown = 1;
     }

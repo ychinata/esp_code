@@ -10,6 +10,36 @@ void LED_SetPinPwm(int ledPin, int pwmValue) {
     analogWrite(ledPin, pwmValue);
 }
 
+//2024.3.30
+// 输出设置为0, 关闭所有灯, LED负极接IO
+void LED_TurnOff(void) {
+    digitalWrite(LED_PIN_COLD, HIGH);   //输出3V3，正极接5V，灯灭
+    digitalWrite(LED_PIN_WARM, HIGH);
+    //digitalWrite(LED_PIN_WARM, LOW);    //输出2.2V，为什么不是0V
+}
+
+//2024.3.27
+void LED_TurnOnWarm(int ledPwmValue) {
+    LED_SetPinPwm(LED_PIN_R1, ledPwmValue);
+}
+
+//2024.3.27
+void LED_TurnOnCold(int ledPwmValue) {
+    LED_SetPinPwm(LED_PIN_G1, ledPwmValue);    
+}
+
+//2024.3.27
+void LED_TurnOnLevel(int ledPwmValue) {
+    LED_TurnOnWarm(ledPwmValue); 
+    LED_TurnOnCold(ledPwmValue);    
+}
+
+//2024.3.30
+void LED_TurnOn(void) {
+    digitalWrite(LED_PIN_WARM, LOW);
+    digitalWrite(LED_PIN_COLD, LOW);
+}
+
 void LED_SetPinBlink(int ledPin) {
     digitalWrite(ledPin, HIGH);   // 可选LED_BUILTIN
     delay(500);                       
