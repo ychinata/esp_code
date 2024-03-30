@@ -3,6 +3,9 @@
 
 #include <Arduino.h>
 
+#define encoderPinA 23
+#define encoderPinB 26
+
 // internal
 void ROTARYENCODER_INTA();
 void ROTARYENCODER_INTB();

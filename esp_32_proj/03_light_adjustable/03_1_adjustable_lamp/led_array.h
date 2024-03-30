@@ -12,7 +12,7 @@
 #define LED_PIN_G2 25   // D5
 #define LED_PIN_R2 27   // D5
 
-#define LED_PIN_COLD 23
+#define LED_PIN_COLD 27
 #define LED_PIN_WARM 25
 
 void LED_SetPinPwm(int ledPin, int pwmValue);

@@ -11,8 +11,7 @@
 //volatile long temp, encoderCounter =0; //This variable will increase or decreas depending on the rotation of encoder
 int counterLast = 0;
 int encoderCounter = 0; //This variable will increase or decreas depending on the rotation of encoder
-int encoderPinA = 2; //interrupt pin 2 
-int encoderPinB = 3; //interrrupt pin 3
+
 
 // 初始化
 void ROTARYENCODER_Init(void) {

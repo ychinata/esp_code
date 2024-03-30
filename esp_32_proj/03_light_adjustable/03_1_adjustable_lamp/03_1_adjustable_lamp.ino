@@ -5,6 +5,7 @@
  *********************************************/
 #include <Wire.h>
 #include "bh1750.h"
+#include "key.h"
 #include "led_array.h"
 //#include "oled_i2c_adafruit.h"
 //#include "power_measure.h"
@@ -40,14 +41,17 @@ void loop() {
     //LED_TurnOn(255);
     //LED_LightWhite();
     //delay(1000); 
-    //LED_TurnOff();
-    LED_TurnOn();
+    LED_TurnOff();
+    //LED_TurnOn();
     delay(1000); 
     
     ROTARYENCODER_Show();       // 调光值维测
     //Serial.println(ledPwmValue);
     lux = BH1750_GetData();               // 获取光照强度数据
+
+    //show
     //OLED_ShowBright(brightValue, ledPwmValue, lux);
+    ROTARYENCODER_Show();
 }
 
 // 有连接灯板吗?
