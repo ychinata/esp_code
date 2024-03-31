@@ -26,6 +26,8 @@
 #define BASIC_ENCODER_H_
 
 #include <Arduino.h>
+// 解决编译错误，为什么这样修改？
+uint8_t SREG;
 
 class BasicEncoder {
  public:

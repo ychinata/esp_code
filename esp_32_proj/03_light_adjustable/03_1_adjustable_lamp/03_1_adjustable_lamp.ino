@@ -4,16 +4,13 @@
  *@Date: 2024.3.27
  *********************************************/
 #include <Wire.h>
-#include <BasicEncoder.h>   //库BasicEncoder
+//#include <BasicEncoder.h>   //库BasicEncoder
 #include "bh1750.h"
 #include "key.h"
 #include "led_array.h"
 //#include "oled_i2c_adafruit.h"
 //#include "power_measure.h"
 #include "rotary_encoder.h"
-
-// 定义编码器对象
-BasicEncoder encoder(encoderPinA, encoderPinB);
 
 void setup() {
     // 初始化
@@ -31,17 +28,6 @@ void setup() {
 }
 
 void loop() {
-    encoder.service();
-    int encoder_change = encoder.get_change();
-    if (encoder_change) {
-        Serial.println(encoder.get_count());
-    } 
-    // Even a short delay here will affect performance.
-    // Uncomment and change the delay to see what happens.
-    //delay(10);
-}
-
-void loop1() {
     //Serial.println(lights);
     double brightValue = 0.0;
     int ledPwmValue = 0;
@@ -54,8 +40,8 @@ void loop1() {
     //LED_TurnOn(255);
     //LED_LightWhite();
     //delay(1000); 
-    //LED_TurnOff();
-    LED_TurnOn();
+    LED_TurnOff();
+    //LED_TurnOn();
     delay(1000); 
     
     ROTARYENCODER_Show();       // 调光值维测
