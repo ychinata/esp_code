@@ -11,10 +11,9 @@
 //#include "oled_i2c_adafruit.h"
 //#include "power_measure.h"
 #include "rotary_encoder.h"
- 
-BasicEncoder encoder(encoderPinA encoderPinA);
 
-
+// 定义编码器对象
+BasicEncoder encoder(encoderPinA, encoderPinB);
 
 void setup() {
     // 初始化
