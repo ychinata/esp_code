@@ -1,5 +1,6 @@
 #include <analogWrite.h>    // 安装库ESP32 AnalogWrite
 #include "car.h"
+#include "key.h"
 #include "oled_i2c_adafruit.h"
 /*
 Date:2024.1.10
@@ -7,20 +8,46 @@ Date:2024.1.10
 
 void setup() {
     // put your setup code here, to run once:    
-    Serial.begin(115200);
+    Serial.begin(9600);
     Car_Init();
     OLED_I2C_Adafruit_Init();
+    KEY_Init();
     //test
-    OLED_I2C_Adafruit_DrawStrShow(0, 8, "TonyCode", 1);
+    int fontsize = 1;
+    OLED_I2C_Adafruit_DrawStrShow(0, 8, "InitReady", fontsize);
     //
-    OLED_I2C_Adafruit_DrawStrSize2Test();    
+    //OLED_I2C_Adafruit_DrawStrSize2Test();    
 }
 
 void loop() {
     // put your main code here, to run repeatedly:
     //CAR_Test2();
     int speed = 255;	// 电机死区待确认30
-    CAR_ForwardAll(speed);  // 前进ok
+    int keystate = 0xff;
+
+    keystate = Key_GetMoterState();
+    if (keystate == 1) {
+        CAR_ForwardAll(speed);  // 前进ok
+    } else {
+        CAR_Stop();
+    }
+    
+    if (KEY_IsPressDown() == 1) {
+        // 如果按下按键，则改变状态
+        Key_SetMoterState();
+        if (Key_GetMoterState() == 1) {
+            OLED_ShowStrWithRowCol(2, 1, "ON");
+            //OLED_I2C_Adafruit_DrawStrShow(0, 8, "ON", 1);
+            Serial.println(F("ON"));
+        } else {
+            OLED_ShowStrWithRowCol(2, 1, "OFF");
+            //OLED_I2C_Adafruit_DrawStrShow(0, 8, "OFF", 1);
+            Serial.println(F("OFF"));
+        }
+    }
+    Serial.printf("MoterState= %d\n", Key_GetMoterState());
+    Serial.println(F("OFF"));
+    //OLED_ShowStrWithRowCol(1, 1, "START");
 }
 
 void CAR_Test2(void) {

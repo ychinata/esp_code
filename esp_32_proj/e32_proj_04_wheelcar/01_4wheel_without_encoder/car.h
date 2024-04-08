@@ -42,7 +42,7 @@ void topLeft(unsigned int pwm);
 void topRight(unsigned int pwm);
 void bottomLeft(unsigned int pwm);
 void bottomRight(unsigned int pwm);
-void Stop();
+void CAR_Stop();
 
 void Upup();  //直线行驶一段距离
 void Left90(); //左转90度

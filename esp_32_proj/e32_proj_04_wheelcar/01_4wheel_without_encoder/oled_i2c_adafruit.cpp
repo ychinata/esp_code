@@ -61,6 +61,20 @@ void OLED_I2C_Adafruit_DrawStrSize2Test(void) {
     OLED_SetDisplay();
 }
 
+void OLED_ShowStrWithRowCol(int row, int col, char* str) {
+    int fontsize = 2;
+    // 参数校验
+    if (row < 1 || row > 4) { // size2
+        return;
+    }
+    if (col < 1 || col > 10) { // size2
+        return;
+    }
+    OLED_ClearDisplay(); 
+    OLED_I2C_Adafruit_DrawStr((col-1)*PX2, (row-1)*PY2, str, fontsize);
+    OLED_SetDisplay();
+}
+
 void OLED_ClearDisplay(void) {
     OledObj.clearDisplay();         //清屏
 }

@@ -2,6 +2,8 @@
 #include "Car.h"
 #include <Arduino.h>
 
+void Stop();
+
 void Motor_ForwardInit()
 {
     pinMode(PWMA,OUTPUT);
@@ -27,8 +29,9 @@ void Car_Init()
    /*初始化小车控制IO*/
     Motor_ForwardInit();
     Motor_BackwardInit();
-    Stop(); /*初始停止转动*/
+    CAR_Stop(); /*初始停止转动*/
 
+/*
     digitalWrite(BACK_AIN1,1);    
     digitalWrite(BACK_AIN2,0); 
     digitalWrite(BACK_BIN1,1);
@@ -38,7 +41,7 @@ void Car_Init()
     digitalWrite(BIN2,0);  //27
     digitalWrite(AIN1,1);  //25
     digitalWrite(AIN2,0);  //33    
-
+*/
 }
 
 
@@ -184,8 +187,16 @@ void CAR4_Clkwise(unsigned int speed) {
 }
   
 //停车
+void CAR_Stop() {
+    int speed = 0;
+    DRV8833_LF_Forward(speed);
+    DRV8833_RF_Forward(speed);
+    DRV8833_LB_Forward(speed);
+    DRV8833_RB_Forward(speed);
+}
 
-void Stop(){    
+// 待删除
+void Stop() {    
   digitalWrite(AIN2,LOW);
   digitalWrite(AIN1,LOW);
   digitalWrite(BIN1,LOW);

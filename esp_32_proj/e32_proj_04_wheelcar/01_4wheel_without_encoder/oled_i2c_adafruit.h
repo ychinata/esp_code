@@ -21,4 +21,7 @@ void OLED_SetDisplay(void);
 //test
 void OLED_I2C_Adafruit_DrawStrSize2Test(void);
 
+
+void OLED_ShowStrWithRowCol(int row, int col, char* str);
+
 #endif
