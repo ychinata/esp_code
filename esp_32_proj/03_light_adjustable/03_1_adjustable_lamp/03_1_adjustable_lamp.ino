@@ -13,18 +13,22 @@
 #include "rotary_encoder.h"
 
 void setup() {
-    // 初始化
+    // 模块初始化begin
     Serial.begin(9600);
     BH1750_Init();                  //初始化BH1750
     //OLED_I2C_Adafruit_Init();  
     ROTARYENCODER_Init();  
-
     // 一路灯板D4
     pinMode(LED_PIN_COLD, OUTPUT);
-    pinMode(LED_PIN_WARM, OUTPUT); 
-
+    pinMode(LED_PIN_WARM, OUTPUT);
+    LED_Init();
     // key
     pinMode(KEY_PIN, INPUT);
+    // 模块初始化end
+
+    // 初始配置
+    //LED_TurnOnRgbAll();
+    //LED_TurnOnRgbOnBorad();
 }
 
 void loop() {
@@ -35,14 +39,15 @@ void loop() {
     
     brightValue = ROTARYENCODER_GetData();          // 获取编码器设定的亮度值
     ledPwmValue = map(brightValue, 0, 360, 0, 255); // 将编码器原始值0-360映射到pwm值0-255,超出0-360的范围会重新映射
+    
     //LED_SetPinPwm(LED_PIN, ledPwmValue);            // 调光
     // 点灯
     //LED_TurnOn(255);
     //LED_LightWhite();
     //delay(1000); 
-    LED_TurnOff();
+    //LED_TurnOff();
     //LED_TurnOn();
-    delay(1000); 
+    LED_SetAllKindofColorOnBorad();
     
     ROTARYENCODER_Show();       // 调光值维测
     //Serial.println(ledPwmValue);
