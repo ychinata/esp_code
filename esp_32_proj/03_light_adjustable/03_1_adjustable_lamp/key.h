@@ -11,5 +11,6 @@
 
 int KEY_Init(void);
 int KEY_IsPressDown(void);
+int KEY_GetValue(void);
 
 #endif

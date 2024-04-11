@@ -181,18 +181,31 @@ int LED_GetLedRgbOnBoardState(void)
 }
 
 //2024.4.11
-void LED_ChangeLedRgbOnBoardState(void)
+void LED_ChangeLedRgbOnBoardState(int mode)
 {
-    g_ledRgbOnBoardState++;
-    if (g_ledRgbOnBoardState >= 8) {
-        g_ledRgbOnBoardState == 0;
+    if (1 == mode) {
+        g_ledRgbOnBoardState++;
+        if (g_ledRgbOnBoardState >= 8) {
+            g_ledRgbOnBoardState = 0;
+        }        
+    } else if (2 == mode) {
+        g_ledRgbOnBoardState--;    
+        if (g_ledRgbOnBoardState < 0) {
+            g_ledRgbOnBoardState = 7;
+        }               
+    } else {
+
     }
 }
 
 /* 应用层 */
 void LEDAPP_ChangeClorModeofRbgOnBoradWithKey(void) {
-    if (1 == KEY_IsPressDown()) {
-        LED_ChangeLedRgbOnBoardState();
+    if (1 == KEY_GetValue()) {
+        LED_ChangeLedRgbOnBoardState(1);
+    } else if (2 == KEY_GetValue()) {
+        LED_ChangeLedRgbOnBoardState(2);
+    } else {
+
     }
     LED_SetColorOnBorad(g_ledRgbOnBoardState);
 }
