@@ -38,5 +38,6 @@ void LED_TurnOffRgbAll(void);
 void LED_TurnOnRgbOnBorad(void);
 void LED_TurnOffRgbOnBorad(void);
 void LED_SetAllKindofColorOnBorad(void);
+void LEDAPP_ChangeClorModeofRbgOnBoradWithKey(void);
 
 #endif

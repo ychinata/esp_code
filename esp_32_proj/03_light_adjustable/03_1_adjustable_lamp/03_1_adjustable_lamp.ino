@@ -23,7 +23,7 @@ void setup() {
     pinMode(LED_PIN_WARM, OUTPUT);
     LED_Init();
     // key
-    pinMode(KEY_PIN, INPUT);
+    KEY_Init();
     // 模块初始化end
 
     // 初始配置
@@ -47,7 +47,8 @@ void loop() {
     //delay(1000); 
     //LED_TurnOff();
     //LED_TurnOn();
-    LED_SetAllKindofColorOnBorad();
+    //LED_SetAllKindofColorOnBorad();
+    LEDAPP_ChangeClorModeofRbgOnBoradWithKey();
     
     ROTARYENCODER_Show();       // 调光值维测
     //Serial.println(ledPwmValue);
@@ -64,3 +65,4 @@ void work4() {
     Serial.println(val);
     LEDARRAY_Set(val);
 }
+
