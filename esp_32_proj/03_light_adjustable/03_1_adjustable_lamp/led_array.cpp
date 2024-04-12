@@ -199,10 +199,14 @@ void LED_ChangeLedRgbOnBoardState(int mode)
 }
 
 /* 应用层 */
+//2024.4.11
+// KEY_GetValue只能调用一次，不能多次调用。这个错误重复犯了！2024.4.12
 void LEDAPP_ChangeClorModeofRbgOnBoradWithKey(void) {
-    if (1 == KEY_GetValue()) {
+    int keyValue = 0;
+    keyValue = KEY_GetValue();
+    if (1 == keyValue) {
         LED_ChangeLedRgbOnBoardState(1);
-    } else if (2 == KEY_GetValue()) {
+    } else if (2 == keyValue) {
         LED_ChangeLedRgbOnBoardState(2);
     } else {
 

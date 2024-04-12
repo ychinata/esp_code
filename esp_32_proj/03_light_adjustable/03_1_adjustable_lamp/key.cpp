@@ -29,41 +29,23 @@ int KEY_IsPressDown(void)
 }
 
 //20240411
-// 按键检测-很难检测到key2
-int KEY_GetValue2(void)
+// 按键检测-如何实现多个按键检测单击、双击、长按、按住不放
+// 如何实现两个按键同时按下
+// 如何用中断实现
+int KEY_GetValue(void)
 {
     int keyValue = 0;
+    if (digitalRead(KEY2_PIN) == LOW) {       // 按键按下
+        delay(20);                          // 延时消抖
+        while (digitalRead(KEY2_PIN) == LOW); // 等待松手
+        keyValue = 2;
+    }    
     if (digitalRead(KEY1_PIN) == LOW) {       // 按键按下
         delay(20);                          // 延时消抖
         while (digitalRead(KEY1_PIN) == LOW); // 等待松手
         //delay(20);                          // 延时消抖
         keyValue = 1;
     }
-    if (digitalRead(KEY2_PIN) == LOW) {       // 按键按下
-        delay(20);                          // 延时消抖
-        while (digitalRead(KEY2_PIN) == LOW); // 等待松手
-        keyValue = 2;
-    }    
+
     return keyValue;
-}
-
-//20240411
-// 按键检测-很难检测到key2
-int KEY_GetValue(void)
-{
-    int keyValue = 0;
-    int keyState = 0;
-    if (digitalRead(KEY2_PIN) == LOW) {
-        keyValue = 1;
-    } else if (digitalRead(KEY1_PIN) == LOW) {
-        keyValue = 2;
-    }
-
-    if (keyValue == 1 || keyValue == 2) {       // 按键按下
-        delay(20);                          // 延时消抖
-        while ((digitalRead(KEY2_PIN) == LOW) || (digitalRead(KEY1_PIN) == LOW)); // 等待松手
-        //delay(20);                          // 延时消抖
-        return keyValue;
-    }  
-    return 0;
 }
