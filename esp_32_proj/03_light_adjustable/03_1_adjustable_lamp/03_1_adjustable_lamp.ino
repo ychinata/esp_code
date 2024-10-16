@@ -19,9 +19,7 @@ void setup() {
     BH1750_Init();                  //初始化BH1750
     OLED_I2C_Adafruit_Init();  
     ROTARYENCODER_Init();  
-    // 一路灯板D4
-    pinMode(LED_PIN_COLD, OUTPUT);
-    pinMode(LED_PIN_WARM, OUTPUT);
+
     LED_Init();
     // key
     KEY_Init();

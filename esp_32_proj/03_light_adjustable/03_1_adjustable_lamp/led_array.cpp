@@ -22,7 +22,13 @@ void LED_RGB5050Init(void) {
 
 //2024.4.11
 void LED_Init(void) {
-    LED_RGB5050Init();           
+    
+    // 一路灯板D4
+    pinMode(LED_PIN, OUTPUT);
+    
+    //pinMode(LED_PIN_COLD, OUTPUT);
+    //pinMode(LED_PIN_WARM, OUTPUT);
+    //LED_RGB5050Init();           
 }
 
 /*
