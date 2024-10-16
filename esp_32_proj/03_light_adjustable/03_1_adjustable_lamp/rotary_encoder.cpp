@@ -36,8 +36,8 @@ double ROTARYENCODER_GetData(void) {
     double angle = 0.0;
     // Send the value of counter
     //double angle = encoderCounter*360/172032.0;//ppr=172032
-    //return angle = encoderCounter*4.5;  //一圈对应数值80
-    return angle = encoderCounter;  //一圈对应数值80
+    return angle = encoderCounter*4.5;  //一圈对应数值80
+    //return angle = encoderCounter;  //一圈对应数值80
 }
 
 // 维测函数

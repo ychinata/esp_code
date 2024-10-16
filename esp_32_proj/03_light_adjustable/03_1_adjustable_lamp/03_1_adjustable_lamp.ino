@@ -40,8 +40,8 @@ void loop() {
     float humidity = 0.0;
     float temp = 0.0; 
     
-    brightValue = 100;
-    //brightValue = ROTARYENCODER_GetData();          // 获取编码器设定的亮度值
+    //brightValue = 100;
+    brightValue = ROTARYENCODER_GetData();          // 获取编码器设定的亮度值
     ledPwmValue = map(brightValue, 0, 360, 0, 255); // 将编码器原始值0-360映射到pwm值0-255,超出0-360的范围会重新映射
     LED_SetPinPwm(LED_PIN, ledPwmValue);            // 调光
     ROTARYENCODER_Show();                           // 调光值维测
@@ -51,7 +51,7 @@ void loop() {
     DHT11_Getdata(&humidity, &temp);                // 获取温度和温度
     OLED_ShowBright(brightValue, ledPwmValue, lux, humidity, temp);
     //DHT11_Showdata();
-    delay(2000);        // 得改用定时器来实现，要不然无法实时捕获编码器?
+    delay(1000);                                    // 延时1s也可以捕获编码器，但数码值不准确
 }
 
 // 2024.4.12
